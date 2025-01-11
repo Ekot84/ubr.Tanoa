@@ -1,0 +1,88 @@
+class Header {
+    gameType = Coop; // Mission type (Cooperative)
+    minPlayers = 1;  // Minimum players
+    maxPlayers = 10; // Maximum players
+};
+
+enableStamina = false; // No Stamina
+respawn = 3; // Instant respawn
+
+class RscTitles {
+    class RscDisplayHealthBar {
+        idd = -1;
+        duration = 1e+1000; // Infinite duration
+        fadeIn = 0;
+        fadeOut = 0;
+        onLoad = "uiNamespace setVariable ['RscDisplayHealthBar', _this select 0];";
+
+        class Controls {
+            class HealthLabel {
+                idc = 1000;
+                type = 0;
+                style = 0;
+                x = 0.03 * safezoneW + safezoneX; // Align with health bar
+                y = 0.78 * safezoneH + safezoneY; // Above the health bar
+                w = 0.075 * safezoneW;            // Match width of bar
+                h = 0.01 * safezoneH;             // Small height for text
+                colorText[] = {1, 1, 1, 1};       // White text
+                colorBackground[] = {0, 0, 0, 0}; 
+                text = "Health";                  // Label text
+                font = "PuristaMedium";
+                sizeEx = 0.03;                    // Adjust text size
+            };
+
+            class HealthBarBackground {
+                idc = 1001;
+                type = 0;
+                style = 128; // Box style
+                x = 0.03 * safezoneW + safezoneX; // Position
+                y = 0.8 * safezoneH + safezoneY;  // Vertical position
+                w = 0.075 * safezoneW;            // Width
+                h = 0.01 * safezoneH;             // Height
+                colorBackground[] = {0, 0, 0, 0.5}; // Semi-transparent black
+                text = ""; 
+                font = "PuristaMedium";
+                sizeEx = 0; 
+                colorText[] = {0, 0, 0, 0}; 
+            };
+
+            class HealthBarForeground {
+                idc = 1002;
+                type = 0;
+                style = 128; // Box style
+                x = 0.03 * safezoneW + safezoneX; // Position
+                y = 0.8 * safezoneH + safezoneY;  // Vertical position
+                w = 0.075 * safezoneW;            // Width
+                h = 0.01 * safezoneH;             // Height
+                colorBackground[] = {0, 0.6, 0, 1}; // Darker green
+                text = ""; 
+                font = "PuristaMedium";
+                sizeEx = 0; 
+                colorText[] = {0, 0, 0, 0}; 
+            };
+
+            class HealthText {
+                idc = 1003;
+                type = 0;
+                style = 2; // Center text style
+                x = 0.03 * safezoneW + safezoneX; // Align with health bar
+                y = 0.8 * safezoneH + safezoneY;  // Inside the bar
+                w = 0.075 * safezoneW;            // Match width of bar
+                h = 0.01 * safezoneH;             // Match height of bar
+                colorText[] = {1, 1, 1, 1};       // White text
+                colorBackground[] = {0, 0, 0, 0}; 
+                text = "100%";                    // Initial text
+                font = "PuristaMedium";
+                sizeEx = 0.02;                    // Adjust text size
+            };
+        };
+    };
+};
+
+
+
+
+
+
+
+
