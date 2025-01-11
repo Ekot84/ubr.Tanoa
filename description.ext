@@ -4,6 +4,7 @@ class Header {
     maxPlayers = 3; // Maximum players
 };
 
+requiredAddons[] = {"CBA_Main"};
 enableStamina = false; // No Stamina
 respawn = 3; // Instant respawn
 
