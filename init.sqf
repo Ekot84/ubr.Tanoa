@@ -4,7 +4,7 @@
 [] execVM "healthbartest.sqf";
 [] execVM "kill_death_counter.sqf";
 [] execVM "killTicker.sqf";
-execVM "staminaRegen.sqf";
+[] execVM "staminaRegen.sqf";
 
 diag_log "Initializing EntityKilled Debugging...";
 

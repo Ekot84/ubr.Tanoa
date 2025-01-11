@@ -5,15 +5,7 @@ if (hasInterface) then {
     player setCustomAimCoef 0.5; // Apply reduction at start
 };
 
-[] spawn {
-    while {true} do {
-        // Delay between spawn checks (e.g., 60 seconds)
-        sleep 60;
 
-        // Call the AI spawn script
-        [] execVM "dynamicSpawnAI.sqf";
-    };
-};
 // Keybind for jump (spacebar in this example)
 [] spawn {
     waitUntil {alive player};
@@ -25,4 +17,3 @@ if (hasInterface) then {
         sleep 0.01; // Check frequently for key press
     };
 };
-[] execVM "spawnNearBuilding.sqf";
