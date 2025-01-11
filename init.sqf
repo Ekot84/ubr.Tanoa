@@ -4,6 +4,7 @@
 [] execVM "healthbartest.sqf";
 [] execVM "kill_death_counter.sqf";
 [] execVM "killTicker.sqf";
+execVM "staminaRegen.sqf";
 
 diag_log "Initializing EntityKilled Debugging...";
 
@@ -19,3 +20,4 @@ diag_log "Initializing EntityKilled Debugging...";
     private _killerName = if (isNil "_killer") then {"Unknown"} else {name _killer};
     hint format ["%1 killed %2", _killerName, _killedName];
 }] call CBA_fnc_addEventHandler;
+
