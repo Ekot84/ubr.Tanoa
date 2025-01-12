@@ -15,9 +15,10 @@ private _cooldownTime = 600;           // Cooldown time in seconds for spawn zon
 private _spawnedZones = [];            // Stores active zones as [position, group, timestamp]
 private _cooldownZones = [];           // Stores cooldown zones as [position, cooldownEndTime]
 
-// Function to log messages
+// Function to log messages with consistent prefix
 private _log = {
     params ["_message"];
+if (isNil "_message") exitWith { diag_log "[AI Spawn System] Error: Log message is undefined."; };
     diag_log format ["[AI Spawn System] %1", _message];
 };
 
@@ -32,37 +33,51 @@ private _getRandomPosition = {
 
     // Validate terrain
     if (!(surfaceIsWater _randomPos)) then {
-        diag_log format ["Generated position: %1", _randomPos];
+        [format ["Generated position: %1", _randomPos]] call _log;
         _randomPos
     } else {
-        diag_log "Generated position is on water. Skipping.";
+        ["Generated position is on water. Skipping."] call _log;
         []
     };
 };
 
 // Function to clean up inactive zones
 private _cleanupZones = {
+    if (count _spawnedZones == 0) exitWith {
+        ["No zones available for cleanup."] call _log;
+    };
+
     _spawnedZones = _spawnedZones select {
         params ["_zone"];
-        private _group = _zone select 1;
-        private _zonePos = _zone select 0;
+        if (isNil "_zone" || {count _zone < 2}) exitWith {
+            diag_log "[AI Spawn System] Error: Invalid or undefined zone.";
+            false
+        };
 
-        if (isNull _group) exitWith { false };
+        private _group = _zone select 1; // Retrieve group
+        private _zonePos = _zone select 0; // Retrieve position
 
-        // Remove if no players nearby
+        if (isNull _group) exitWith {
+            diag_log "[AI Spawn System] Warning: Group is null for zone at " + str _zonePos;
+            false
+        };
+
+        // Check if no players are nearby
         if ((allPlayers findIf {(_x distance _zonePos) < _cleanupDistance}) == -1) then {
+            // Delete all units in the group
             {
                 if (alive _x) then { deleteVehicle _x; };
             } forEach units _group;
-            deleteGroup _group;
 
-            diag_log format ["Cleaned up zone at %1", _zonePos];
-            false
+            deleteGroup _group; // Delete the group
+            ["Cleaned up zone at " + str _zonePos] call _log;
+            false // Remove this zone from the list
         } else {
-            true
+            true // Keep this zone in the list
         };
     };
 };
+
 
 // Function to check cooldowns
 private _isOnCooldown = {
@@ -73,7 +88,7 @@ private _isOnCooldown = {
     } != -1
 };
 
-// Main server loop
+// Main server-side loop
 if (isServer) then {
     ["Starting AI spawn system..."] call _log;
 
@@ -92,9 +107,8 @@ if (isServer) then {
                     private _nearBuildings = nearestObjects [_spawnPos, ["House", "Building", "Church", "Castle"], 100];
                     private _nearRoads = nearestObjects [_spawnPos, ["Road", "Path"], 100];
 
-                    // Ensure valid spawn area
                     if ((count _nearBuildings > 0 || count _nearRoads > 0)) then {
-                        diag_log format ["Valid spawn location found at %1", _spawnPos];
+                        ["Valid spawn location found at " + str _spawnPos] call _log;
 
                         // Create group
                         private _group = createGroup east;
@@ -114,15 +128,15 @@ if (isServer) then {
                             _aiUnit setSkill ["courage", _skillLevel];
                         };
 
-                        // Track zone and add cooldown
+                        // Track zone
                         _spawnedZones pushBack [_spawnPos, _group, diag_tickTime];
                         _cooldownZones pushBack [_spawnPos, diag_tickTime + _cooldownTime];
-                        diag_log format ["Spawned %1 enemies at %2", _enemyCount, _spawnPos];
+                        ["Spawned " + str _enemyCount + " enemies at " + str _spawnPos] call _log;
                     } else {
-                        diag_log "No valid spawn location found.";
+                        ["No valid spawn location found."] call _log;
                     };
                 } else {
-                    diag_log "Skipping spawn due to cooldown or invalid position.";
+                    ["Skipping spawn due to cooldown or invalid position."] call _log;
                 };
             };
         } forEach allPlayers;

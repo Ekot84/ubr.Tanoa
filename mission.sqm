@@ -12,10 +12,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={13386.908,80.628387,3270.3311};
-		dir[]={-0.31193927,-0.81240559,-0.49263707};
-		up[]={-0.43461552,0.58309263,-0.68637627};
-		aside[]={-0.84486902,-1.4901161e-08,0.53497356};
+		pos[]={11641.9,10.595235,2985.9683};
+		dir[]={-0.68628889,-0.67401731,-0.27338892};
+		up[]={-0.62624556,0.73863322,-0.24946973};
+		aside[]={-0.3700811,-9.8900637e-07,0.92901611};
 	};
 };
 binarizationWanted=0;
@@ -80,12 +80,14 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={13347.224,1.7265506,3218.8511};
+						position[]={11636.142,4.4016638,2981.375};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
+						skill=1;
+						isPlayer=1;
 						isPlayable=1;
 					};
 					id=9;
@@ -126,12 +128,13 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={13345.75,1.7037351,3220.728};
+						position[]={11634.68,4.4064407,2982.554};
 					};
 					side="West";
 					flags=5;
 					class Attributes
 					{
+						skill=1;
 						isPlayable=1;
 					};
 					id=10;
@@ -172,13 +175,13 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={13344.083,1.6105318,3223.1221};
+						position[]={11633.073,4.4092293,2983.6182};
 					};
 					side="West";
 					flags=5;
 					class Attributes
 					{
-						isPlayer=1;
+						skill=1;
 						isPlayable=1;
 					};
 					id=11;
