@@ -1,0 +1,1 @@
+[] execVM "addMPKilledHandler.sqf";

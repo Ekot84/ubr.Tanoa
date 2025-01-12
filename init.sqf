@@ -7,6 +7,8 @@
 [] execVM "staminaRegen.sqf";
 [] execVM "enemySpawnScript.sqf";
 [] execVM "globalCleanup.sqf";
+//[] execVM "addMPKilledHandler.sqf"; //Moved to initServer.sqf
+
 
 diag_log "Initializing EntityKilled Debugging...";
 
