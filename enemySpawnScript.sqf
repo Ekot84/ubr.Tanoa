@@ -64,7 +64,6 @@ private _spawnEnemies = {
 
     // Skip if the building has already been processed
     private _currentTime = time;
-    // Check if the building is on cooldown
     private _foundBuilding = _processedBuildings select { _x select 0 == _building };
     if (!isNil "_foundBuilding" && { _currentTime - (_foundBuilding select 0 select 1) < _cooldownTime }) exitWith {
         diag_log format ["[AI Spawner] Skipped building at %1 due to cooldown.", getPos _building];
@@ -73,9 +72,6 @@ private _spawnEnemies = {
     // Remove expired cooldowns
     _processedBuildings = _processedBuildings select { _currentTime - (_x select 1) < _cooldownTime };
 
-    // Add building to the processed list
-    _processedBuildings pushBack [_building, _currentTime];
-
     // Check current enemy count
     if (count _activeEnemies >= _maxTotalEnemies) exitWith {
         diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping building at %2.", _maxTotalEnemies, getPos _building];
@@ -83,6 +79,9 @@ private _spawnEnemies = {
 
     // Random chance to spawn
     if (random 1 > _spawnChance) exitWith {};
+
+    // Add building to the processed list only if enemies are successfully spawned
+    _processedBuildings pushBack [_building, _currentTime];
 
     // Determine number of enemies to spawn
     private _minEnemies = _enemyCountRange select 0;
