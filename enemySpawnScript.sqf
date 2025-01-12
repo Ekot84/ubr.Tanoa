@@ -126,7 +126,7 @@ private _spawnEnemies = {
         }];
         */
 
-// Add MP event handler for kills
+// Add MPKilled event handler to spawned enemies
 _enemy addMPEventHandler ["MPKilled", {
     params ["_unit", "_killer", "_instigator", "_useEffects"];
 
@@ -137,12 +137,9 @@ _enemy addMPEventHandler ["MPKilled", {
         format ["<t color='#00FF00'>%1</t> died.", name _unit];
     };
 
-    // Call the wrapper function for the killfeed
+    // Call the killfeed function on all clients
     ["fnc_showKillfeed", [_message, _killer, _unit]] remoteExec ["call", 0];
 }];
-
-
-
 
 
         _activeEnemies pushBack _enemy;

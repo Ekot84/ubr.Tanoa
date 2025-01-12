@@ -14,15 +14,15 @@
                         format ["<t color='#00FF00'>%1</t> died.", name _unit];
                     };
 
-                    // Call the wrapper function for the killfeed
+                    // Call the killfeed function on all clients
                     ["fnc_showKillfeed", [_message, _killer, _unit]] remoteExec ["call", 0];
                 }];
 
-                // Mark as assigned
+                // Mark the player as having the handler assigned
                 _x setVariable ["MPKilledHandlerAssigned", true];
             };
         } forEach allPlayers;
 
-        sleep 5; // Recheck every 5 seconds
+        sleep 5; // Recheck every 5 seconds for new players
     };
 };
