@@ -1,9 +1,9 @@
 /*
     Script: Enemy Spawn Near Buildings and Roads
-    Version: 0.15
+    Version: 0.19
     Filename: enemySpawnScript.sqf
     Author: Eko & ChatGPT
-    Description: Spawns enemies near buildings or as patrols on roads with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance. Includes despawning logic based on distance.
+    Description: Spawns enemies near buildings or as patrols on roads with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance. Includes despawning logic based on distance and MP event handling for kills and hits.
 */
 
 // Configuration Parameters
@@ -102,13 +102,9 @@ private _spawnEnemies = {
     diag_log format ["[AI Spawner] Spawning %1 enemies near %2 at %3", _enemyCount, _type, getPos _location];
 
     for "_i" from 1 to _enemyCount do {
-        // Randomize spawn position near location
         private _spawnPos = _location getPos [random 10, random 360];
-        
-        // Ensure spawn distance from player
         if (player distance _spawnPos < _minDistance) exitWith {};
 
-        // Randomize enemy loadout
         private _equipment = selectRandom _equipmentPool;
         private _uniform = selectRandom _uniformPool;
         private _vest = selectRandom _vestPool;
@@ -116,24 +112,42 @@ private _spawnEnemies = {
         private _headgear = selectRandom _headgearPool;
         private _medkit = selectRandom _medkits;
 
-        // Create enemy unit
         private _enemy = createGroup east createUnit [
-            "O_G_Soldier_F",  // Example unit class
-            _spawnPos,
-            [],
-            0.5,
-            "FORM"
+            "O_G_Soldier_F", _spawnPos, [], 0.5, "FORM"
         ];
 
-        // Add MP event handler to track kills
-        _enemy addMPEventHandler ["MPKilled", {
-            params ["_unit", "_killer", "_instigator", "_useEffects"];
-            diag_log format ["[AI Spawner] Enemy killed: %1 by %2", _unit, _killer];
+        // Add MP event handler for hits (commented out)
+        /*
+        _enemy addMPEventHandler ["MPHit", {
+            params ["_unit", "_shooter", "_projectile", "_position"];
+            diag_log format ["[AI Spawner] %1 was hit by %2 with %3 at position %4", _unit, _shooter, _projectile, _position];
+            private _message = format ["%1 hit %2 with %3", name _shooter, name _unit, _projectile];
+            ["showKillfeed.sqf", [_message]] remoteExec ["execVM", 0];
         }];
-        _activeEnemies pushBack _enemy;
-        diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", typeOf _enemy, _spawnPos];
+        */
 
-        // Apply uniform, vest, bag, headgear, and loadout
+        // Add MP event handler for kills
+// Add MPKilled event handler for killfeed
+_enemy addMPEventHandler ["MPKilled", {
+    params ["_unit", "_killer", "_instigator", "_useEffects"];
+
+    // Check if killer is valid and format the message
+    private _message = if (!isNull _killer) then {
+        format ["%1 was killed by %2", name _unit, name _killer]
+    } else {
+        format ["%1 died.", name _unit]
+    };
+
+    diag_log format ["[AI Spawner] %1", _message];
+
+    // Call the centralized killfeed function to display the message
+    [_message, "showKillfeed.sqf"] remoteExec ["execVM", 0];
+}];
+
+
+
+        _activeEnemies pushBack _enemy;
+
         _enemy forceAddUniform _uniform;
         _enemy addVest _vest;
         _enemy addBackpack _bag;
@@ -146,13 +160,15 @@ private _spawnEnemies = {
 
         _enemy addItem _medkit;
 
-        // Randomize skill level
         private _minSkill = _skillRange select 0;
         private _maxSkill = _skillRange select 1;
         private _skill = random (_maxSkill - _minSkill) + _minSkill;
         _enemy setSkill _skill;
     };
 };
+
+// The rest of the script remains unchanged (e.g., road/building functions and main execution loop).
+
 
 // Function to get roads within range
 private _getRoads = {
@@ -169,7 +185,6 @@ private _getBuildings = {
 // Main Execution
 private _spawnLoop = {
     while {true} do {
-        // Clean up enemies outside the cleanup distance
         private _remainingEnemies = [];
         {
             if (player distance _x > _cleanupDistance) then {
@@ -181,13 +196,11 @@ private _spawnLoop = {
         } forEach _activeEnemies;
         _activeEnemies = _remainingEnemies;
 
-        // Recheck for buildings
         private _buildings = _getBuildings call _getBuildings;
         if (count _buildings > 0) then {
             {[_x, "building"] call _spawnEnemies;} forEach _buildings;
         };
 
-        // Recheck for roads
         private _roads = _getRoads call _getRoads;
         if (count _roads > 0) then {
             {[_x, "road"] call _spawnEnemies;} forEach _roads;

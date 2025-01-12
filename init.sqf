@@ -3,7 +3,6 @@
 [] execVM "arcadeHealth.sqf"; // Optional: Arcade health system
 [] execVM "healthbartest.sqf";
 [] execVM "kill_death_counter.sqf";
-[] execVM "killTicker.sqf";
 [] execVM "staminaRegen.sqf";
 [] execVM "enemySpawnScript.sqf";
 [] execVM "globalCleanup.sqf";
