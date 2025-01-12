@@ -6,6 +6,7 @@
 [] execVM "staminaRegen.sqf";
 [] execVM "enemySpawnScript.sqf";
 [] execVM "globalCleanup.sqf";
+[] execVM "functions.sqf";
 //[] execVM "addMPKilledHandler.sqf"; //Moved to initServer.sqf
 
 
