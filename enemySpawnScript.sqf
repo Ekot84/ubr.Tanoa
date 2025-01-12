@@ -1,14 +1,15 @@
 /*
-    Script: Enemy Spawn Near Buildings
+    Script: Enemy Spawn Near Buildings and Roads
+    Version: 0.15
     Filename: enemySpawnScript.sqf
     Author: Eko & ChatGPT
-    Description: Spawns enemies near buildings with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance. Includes despawning logic based on distance.
+    Description: Spawns enemies near buildings or as patrols on roads with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance. Includes despawning logic based on distance.
 */
 
 // Configuration Parameters
 params [
-    ["_spawnChance", 0.5],                         // Probability (0-1) of spawning enemies near a building
-    ["_enemyCountRange", [1, 5]],                  // Array [minEnemies, maxEnemies] to spawn per building
+    ["_spawnChance", 0.5],                         // Probability (0-1) of spawning enemies
+    ["_enemyCountRange", [1, 5]],                  // Array [minEnemies, maxEnemies] to spawn per location
     ["_minDistance", 100],                         // Minimum spawn distance from player (meters)
     ["_maxDistance", 300],                         // Maximum spawn distance from player (meters)
     ["_maxTotalEnemies", 25],                      // Maximum total number of enemies allowed at the same time
@@ -53,45 +54,56 @@ params [
     ["_skillRange", [0.2, 0.8]]                    // Array [minSkill, maxSkill] for enemy skill level
 ];
 
-// Create a global set to track processed buildings
+// Create global variables to track state
 private _processedBuildings = []; // Stores buildings with cooldowns
-private _cooldownTime = 300; // Cooldown time in seconds
-private _activeEnemies = []; // Tracks currently active enemies
+private _processedRoads = [];     // Stores roads with cooldowns
+private _cooldownTime = 300;      // Cooldown time in seconds
+private _activeEnemies = [];      // Tracks currently active enemies
 
-// Function to spawn enemies near a building
+// Function to spawn enemies near a building or road
 private _spawnEnemies = {
-    params ["_building"];
+    params ["_location", "_type"];
 
-    // Skip if the building has already been processed
+    // Skip if the location has already been processed
     private _currentTime = time;
-    private _foundBuilding = _processedBuildings select { _x select 0 == _building };
-    if (!isNil "_foundBuilding" && { _currentTime - (_foundBuilding select 0 select 1) < _cooldownTime }) exitWith {
-        diag_log format ["[AI Spawner] Skipped building at %1 due to cooldown.", getPos _building];
+    private _processedLocations = if (_type == "building") then {_processedBuildings} else {_processedRoads};
+
+    private _foundLocation = _processedLocations select { _x select 0 == _location };
+    if (!isNil "_foundLocation" && { _currentTime - (_foundLocation select 0 select 1) < _cooldownTime }) exitWith {
+        diag_log format ["[AI Spawner] Skipped %1 at %2 due to cooldown.", _type, getPos _location];
     };
 
     // Remove expired cooldowns
-    _processedBuildings = _processedBuildings select { _currentTime - (_x select 1) < _cooldownTime };
+    if (_type == "building") then {
+        _processedBuildings = _processedBuildings select { _currentTime - (_x select 1) < _cooldownTime };
+    } else {
+        _processedRoads = _processedRoads select { _currentTime - (_x select 1) < _cooldownTime };
+    };
 
     // Check current enemy count
     if (count _activeEnemies >= _maxTotalEnemies) exitWith {
-        diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping building at %2.", _maxTotalEnemies, getPos _building];
+        diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping %2 at %3.", _maxTotalEnemies, _type, getPos _location];
     };
 
     // Random chance to spawn
     if (random 1 > _spawnChance) exitWith {};
 
-    // Add building to the processed list only if enemies are successfully spawned
-    _processedBuildings pushBack [_building, _currentTime];
+    // Add location to the processed list
+    if (_type == "building") then {
+        _processedBuildings pushBack [_location, _currentTime];
+    } else {
+        _processedRoads pushBack [_location, _currentTime];
+    };
 
     // Determine number of enemies to spawn
     private _minEnemies = _enemyCountRange select 0;
     private _maxEnemies = _enemyCountRange select 1;
     private _enemyCount = floor (random (_maxEnemies - _minEnemies + 1)) + _minEnemies;
-    diag_log format ["[AI Spawner] Spawning %1 enemies near building at %2", _enemyCount, getPos _building];
+    diag_log format ["[AI Spawner] Spawning %1 enemies near %2 at %3", _enemyCount, _type, getPos _location];
 
     for "_i" from 1 to _enemyCount do {
-        // Randomize spawn position near building
-        private _spawnPos = _building getPos [random 10, random 360];
+        // Randomize spawn position near location
+        private _spawnPos = _location getPos [random 10, random 360];
         
         // Ensure spawn distance from player
         if (player distance _spawnPos < _minDistance) exitWith {};
@@ -112,6 +124,12 @@ private _spawnEnemies = {
             0.5,
             "FORM"
         ];
+
+        // Add MP event handler to track kills
+        _enemy addMPEventHandler ["MPKilled", {
+            params ["_unit", "_killer", "_instigator", "_useEffects"];
+            diag_log format ["[AI Spawner] Enemy killed: %1 by %2", _unit, _killer];
+        }];
         _activeEnemies pushBack _enemy;
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", typeOf _enemy, _spawnPos];
 
@@ -136,6 +154,12 @@ private _spawnEnemies = {
     };
 };
 
+// Function to get roads within range
+private _getRoads = {
+    private _playerPos = getPosATL player;
+    nearestObjects [_playerPos, ["RoadSegment"], _maxDistance]
+};
+
 // Function to get buildings within range
 private _getBuildings = {
     private _playerPos = getPosATL player;
@@ -152,19 +176,21 @@ private _spawnLoop = {
                 deleteVehicle _x;
                 diag_log format ["[AI Spawner] Deleted enemy %1 as it left the cleanup range.", _x];
             } else {
-                _remainingEnemies pushBack _x; // Keep enemies within the range
+                _remainingEnemies pushBack _x;
             };
         } forEach _activeEnemies;
-        _activeEnemies = _remainingEnemies; // Update the active enemies list
+        _activeEnemies = _remainingEnemies;
 
-        // Recheck for spawns
+        // Recheck for buildings
         private _buildings = _getBuildings call _getBuildings;
-        diag_log format ["[AI Spawner] Found %1 buildings within range.", count _buildings];
-
         if (count _buildings > 0) then {
-            {
-                [_x] call _spawnEnemies;
-            } forEach _buildings;
+            {[_x, "building"] call _spawnEnemies;} forEach _buildings;
+        };
+
+        // Recheck for roads
+        private _roads = _getRoads call _getRoads;
+        if (count _roads > 0) then {
+            {[_x, "road"] call _spawnEnemies;} forEach _roads;
         };
 
         diag_log "[AI Spawner] Rechecking for spawns.";
