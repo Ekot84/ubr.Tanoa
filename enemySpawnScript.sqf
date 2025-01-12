@@ -126,23 +126,22 @@ private _spawnEnemies = {
         }];
         */
 
-        // Add MP event handler for kills
-// Add MPKilled event handler for killfeed
+// Add MP event handler for kills
 _enemy addMPEventHandler ["MPKilled", {
     params ["_unit", "_killer", "_instigator", "_useEffects"];
-
-    // Check if killer is valid and format the message
+    
+    // Format the killfeed message
     private _message = if (!isNull _killer) then {
-        format ["%1 was killed by %2", name _unit, name _killer]
+        format ["<t color='#00FF00'>%1</t> was killed by <t color='#FF0000'>%2</t>", name _unit, name _killer]
     } else {
-        format ["%1 died.", name _unit]
+        format ["<t color='#00FF00'>%1</t> died.", name _unit]
     };
-
-    diag_log format ["[AI Spawner] %1", _message];
-
+    
     // Call the centralized killfeed function to display the message
-    [_message, "showKillfeed.sqf"] remoteExec ["execVM", 0];
+    [_message, _killer, _unit] remoteExec ["execVM", 0, "showKillfeed.sqf"];
 }];
+
+
 
 
 

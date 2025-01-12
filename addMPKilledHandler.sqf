@@ -1,24 +1,24 @@
-// Add MPKilled Event Handler Script with centralized killfeed
+// Add MPKilled Event Handler for Players with Join-In-Progress Support
 [] spawn {
     while {true} do {
         // Iterate over all players
         {
             if (isPlayer _x && {isNil {_x getVariable "MPKilledHandlerAssigned"}}) then {
-                // Add MPKilled event handler if it's not already assigned
-                _x addMPEventHandler ["MPKilled", {
-                    params ["_unit", "_killer", "_instigator"];
-                    // Example logic for killfeed
-                    if (!isNull _killer) then {
-                        // Format the message for killfeed
-                        private _message = format ["%1 was killed by %2", name _unit, name _killer];
+                // Add MPKilled event handler to the player
+                ["MPKilled", {
+                    params ["_unit", "_killer", "_instigator", "_useEffects"];
+                    
+                    // Format the killfeed message
+                    private _message = if (!isNull _killer) then {
+                        format ["<t color='#00FF00'>%1</t> was killed by <t color='#FF0000'>%2</t>", name _unit, name _killer]
                     } else {
-                        _message = format ["%1 died.", name _unit];
+                        format ["<t color='#00FF00'>%1</t> died.", name _unit]
                     };
                     
                     // Call the centralized killfeed function to display the message
-                    [_message] remoteExec ["execVM", 0, "showKillfeed.sqf"]; // Use 0 to target all clients
-                }];
-                
+                    [_message, _killer, _unit] remoteExec ["execVM", 0, "showKillfeed.sqf"];
+                }] call CBA_fnc_addEventHandler;
+
                 // Mark the player as having the handler assigned
                 _x setVariable ["MPKilledHandlerAssigned", true];
             };
