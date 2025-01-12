@@ -15,6 +15,28 @@ class RscTitles {
         fadeIn = 0;
         fadeOut = 0;
         onLoad = "uiNamespace setVariable ['RscDisplayHUD', _this select 0];";
+        
+            // Add the Killfeed title
+    class Killfeed {
+        idd = -1;                      // No interaction
+        movingEnable = 0;              // Not movable
+        duration = 10e10;              // Effectively always visible
+        fadeIn = 0;                    // No fade-in
+        fadeOut = 0;                   // No fade-out
+        onLoad = "uiNamespace setVariable ['Killfeed', _this select 0]"; // Save reference
+        controls[] = {"KillfeedText"}; // List of controls
+
+        class KillfeedText: RscStructuredText {
+            idc = 9001;                // Unique control ID
+            x = 0.01;                  // X position (top-left)
+            y = 0.01;                  // Y position (top-left)
+            w = 0.4;                   // Width
+            h = 0.3;                   // Height
+            sizeEx = 0.025;            // Font size
+            colorBackground[] = {0, 0, 0, 0.3}; // Semi-transparent black background
+            text = "";                 // Default text is empty
+        };
+    };
 
         class Controls {
             // Background Box
