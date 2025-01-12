@@ -5,6 +5,7 @@
 [] execVM "kill_death_counter.sqf";
 [] execVM "killTicker.sqf";
 [] execVM "staminaRegen.sqf";
+[] execVM "enemySpawnScript.sqf";
 
 diag_log "Initializing EntityKilled Debugging...";
 
