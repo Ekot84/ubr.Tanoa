@@ -6,26 +6,8 @@ private _minEnemies = 3;               // Minimum number of enemies per spawn
 private _maxEnemies = 8;               // Maximum number of enemies per spawn
 private _cleanupDistance = 2000;       // Distance to remove inactive zones
 private _checkInterval = 30;           // Time in seconds between spawn/cleanup checks
-private _fallbackMultiplier = 2;       // Multiplier for fallback radius
 private _minSpawnDistance = 100;       // Minimum distance from players for AI spawning
 private _maxSpawnDistance = 1000;      // Maximum distance from players for AI spawning
-
-// Random equipment settings
-private _primaryWeapons = [
-    "arifle_Katiba_F", "arifle_MX_F", "arifle_AKM_F", "arifle_CTAR_blk_F"
-];
-private _attachments = [
-    "optic_ACO", "optic_Hamr", "optic_Arco", "muzzle_snds_H", "bipod_01_F_blk"
-];
-private _uniforms = [
-    "U_O_CombatUniform_ocamo", "U_O_GhillieSuit", "U_O_SpecopsUniform_ocamo"
-];
-private _vests = [
-    "V_TacVest_blk", "V_PlateCarrier1_rgr", "V_BandollierB_khk"
-];
-private _headgear = [
-    "H_HelmetO_ocamo", "H_HelmetSpecO_blk", "H_Bandanna_khk"
-];
 
 // Variables for managing towns
 private _towns = [];
@@ -37,24 +19,31 @@ private _log = {
     diag_log format ["[AI Spawn System] %1", _message];
 };
 
-// Detect towns and create zones
+// Detect towns and create zones with names
 private _detectTowns = {
-    private _buildings = nearestObjects [[0, 0, 0], ["House"], 20000]; // Search entire map
     private _checkedPositions = [];
     private _zones = [];
 
+    // Detect zones around building clusters
     {
         private _pos = getPos _x;
-        if (!(_checkedPositions findIf {(_pos distance _x) < 100}) != -1) then {
+        if ((_checkedPositions findIf {(_x distance _pos) < 150}) == -1) then {
             private _nearbyBuildings = nearestObjects [_pos, ["House"], 300];
-            _checkedPositions append ([_nearbyBuildings apply {getPos _x}]);
-            _zones pushBack [_pos, count _nearbyBuildings];
-        };
-    } forEach _buildings;
+            
+            // Use nearestLocation with array syntax
+            private _nearestLocation = nearestLocation [_pos, "nameCity"];
+            private _townName = if (!isNull _nearestLocation) then { text _nearestLocation } else { "Unknown" };
 
-    diag_log format ["[AI Spawn System] Detected %1 towns.", count _zones];
+            _checkedPositions append _nearbyBuildings;
+            _zones pushBack [_pos, count _nearbyBuildings, _townName];
+        };
+    } forEach nearestObjects [[0, 0, 0], ["House"], 20000];
+
+    diag_log format ["[AI Spawn System] Detected %1 zones.", count _zones];
     _zones
 };
+
+
 
 // Function to check if any player is within spawn range of a zone
 private _checkPlayerNearZone = {
@@ -69,79 +58,54 @@ private _checkPlayerNearZone = {
     } != -1;
 };
 
-// Spawn AI in a zone (updated to include distance logic)
+// Spawn AI dynamically in a town zone
 private _spawnAIInZone = {
     params ["_zone"];
-    private ["_center", "_buildingCount"] = _zone;
-    private _radius = _buildingCount * 10; // Scale radius by building count
-    private _buildings = nearestObjects [_center, ["House"], _radius];
+    private _center = _zone select 0;
+    private _buildingCount = _zone select 1;
+    private _townName = _zone select 2;
 
-    // Check spawn chance
     if (random 100 > _spawnChance) exitWith {
-        diag_log format ["[AI Spawn System] Spawn skipped in zone at %1.", _center];
+        diag_log format ["[AI Spawn System] Spawn skipped for town: %1.", _townName];
     };
 
-    diag_log format ["[AI Spawn System] Spawning AI in zone at %1.", _center];
-
-    // Spawn AI near random buildings
+    private _nearBuildings = nearestObjects [_center, ["House"], _buildingCount * 10];
     private _group = createGroup east;
+
     {
         private _buildingPos = getPos _x;
+        private _aiCount = round (_minEnemies + random (_maxEnemies - _minEnemies));
 
-        // Ensure spawn is within player range
-        private _validBuilding = allPlayers findIf {
-            private _dist = _x distance _buildingPos;
-            (_dist >= _minSpawnDistance) && (_dist <= _maxSpawnDistance)
-        } != -1;
+        for "_i" from 1 to _aiCount do {
+            private _unitType = selectRandom ["O_Soldier_F", "O_Soldier_LAT_F", "O_Sniper_F"];
+            private _aiPos = _buildingPos getPos [random 10, random 360]; // Random offset near the building
+            private _aiUnit = _group createUnit [_unitType, _aiPos, [], 0, "FORM"];
 
-        if (_validBuilding) then {
-            // Random enemy count
-            private _enemyCount = floor (_minEnemies + random (_maxEnemies - _minEnemies + 1));
-            for "_i" from 1 to _enemyCount do {
-                private _unitType = selectRandom ["O_Soldier_F", "O_Soldier_LAT_F", "O_Sniper_F"];
-                private _aiUnit = _group createUnit [_unitType, _buildingPos, [], 0, "FORM"];
-
-                // Set random skill
-                private _skillLevel = _minSkill + random (_maxSkill - _minSkill);
-                _skillLevel = _skillLevel min 1 max 0; // Clamp skill level between 0 and 1
-                _aiUnit setSkill ["aimingAccuracy", _skillLevel];
-                _aiUnit setSkill ["aimingSpeed", _skillLevel];
-                _aiUnit setSkill ["spotDistance", _skillLevel];
-                _aiUnit setSkill ["spotTime", _skillLevel];
-                _aiUnit setSkill ["courage", _skillLevel];
-
-                // Assign random equipment
-                _aiUnit forceAddUniform (selectRandom _uniforms);
-                _aiUnit addVest (selectRandom _vests);
-                _aiUnit addHeadgear (selectRandom _headgear);
-                _aiUnit addWeapon (selectRandom _primaryWeapons);
-
-                if (random 100 < 50) then {
-                    _aiUnit addPrimaryWeaponItem (selectRandom _attachments);
-                };
-            };
+            // Set AI attributes
+            private _skillLevel = _minSkill + random (_maxSkill - _minSkill);
+            _skillLevel = _skillLevel min 1 max 0; // Clamp between 0 and 1
+            _aiUnit setSkill ["aimingAccuracy", _skillLevel];
+            _aiUnit setSkill ["spotDistance", _skillLevel];
+            _aiUnit setSkill ["courage", _skillLevel];
         };
-    } forEach _buildings;
+    } forEach _nearBuildings;
 
-    // Track active zone
     _activeZones pushBack [_zone, _group];
+    diag_log format ["[AI Spawn System] Spawned %1 AI in town: %2.", _aiCount, _townName];
 };
+
 
 // Cleanup inactive zones
 private _cleanupZones = {
     _activeZones = _activeZones select {
         params ["_zone", "_group"];
         private _center = _zone select 0;
-        private _radius = (_zone select 1) * 10;
-
-        // Check if players are nearby
-        if ((allPlayers findIf {(_x distance _center) < _radius}) == -1) then {
+        if ((allPlayers findIf {(_x distance _center) < _cleanupDistance}) == -1) then {
             {
                 if (alive _x) then { deleteVehicle _x; };
             } forEach units _group;
-
             deleteGroup _group;
-            diag_log format ["[AI Spawn System] Cleaned up zone at %1.", _center];
+            diag_log format ["[AI Spawn System] Cleaned up zone in town: %1.", _zone select 2];
             false
         } else {
             true
@@ -156,6 +120,7 @@ if (isServer) then {
     private _zones = call _detectTowns;
 
     while {true} do {
+        // Process zones for spawning and cleanup
         {
             if ((_x call _checkPlayerNearZone) && !(_x in _activeZones)) then {
                 _x call _spawnAIInZone;
