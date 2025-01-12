@@ -11,7 +11,7 @@ params [
     ["_spawnChance", 0.5],                         // Probability (0-1) of spawning enemies
     ["_enemyCountRange", [1, 5]],                  // Array [minEnemies, maxEnemies] to spawn per location
     ["_minDistance", 100],                         // Minimum spawn distance from player (meters)
-    ["_maxDistance", 300],                         // Maximum spawn distance from player (meters)
+    ["_maxDistance", 1300],                         // Maximum spawn distance from player (meters)
     ["_maxTotalEnemies", 25],                      // Maximum total number of enemies allowed at the same time
     ["_spawnCheckInterval", 120],                  // Interval in seconds to recheck and spawn enemies if under the limit
     ["_cleanupDistance", 500],                     // Distance from player at which enemies are removed
@@ -59,18 +59,103 @@ private _processedBuildings = [];
 private _processedRoads = [];
 private _cooldownTime = 300;      // Cooldown time in seconds
 private _activeEnemies = [];      // Tracks currently active enemies
+private _maxScanDistance = 1500;
+
+// Function to get buildings within range
+private _getBuildings = nearestobjects [getPosATL player, ["House",  "Building"], 15000];
 
 // Function to get roads within range
 private _getRoads = {
     private _playerPos = getPosATL player;
-    nearestObjects [_playerPos, ["RoadSegment"], _maxDistance]
+    nearestTerrainObjects [_playerPos, ["ROAD"], 15000]
 };
 
-// Function to get buildings within range
-private _getBuildings = {
-    private _playerPos = getPosATL player;
-    nearestObjects [_playerPos, ["House"], _maxDistance]
+// Debug: Test nearest terrain objects for all types
+diag_log "[Debug] Testing nearestTerrainObjects for all types...";
+private _testObjects = nearestobjects [getPosATL player, ["House",  "Building"], 15000];
+private _objectTypes = _testObjects apply {typeOf _x};
+diag_log format ["[Debug] Found object types near player: %1", _objectTypes];
+
+// Ensure _getBuildings is initialized and tested
+private _testBuildings = [];
+if (!isNil "_getBuildings") then {
+    diag_log "[Debug] Testing _getBuildings with nearestTerrainObjects...";
+    _testBuildings = _getBuildings call {};
+    if (isNil "_testBuildings" || {_testBuildings isEqualTo []}) then {
+        diag_log "[Debug] _getBuildings returned no results.";
+        _testBuildings = []; // Ensure it's initialized to an empty array
+    } else {
+        diag_log format ["[Debug] _getBuildings returned: %1", _testBuildings];
+    };
+} else {
+    diag_log "[Error] _getBuildings is not defined!";
+    _testBuildings = []; // Fallback to an empty array
 };
+
+// Ensure _getRoads is initialized and tested
+private _testRoads = [];
+if (!isNil "_getRoads") then {
+    diag_log "[Debug] Testing _getRoads with nearestTerrainObjects...";
+    _testRoads = _getRoads call {};
+    if (isNil "_testRoads" || {_testRoads isEqualTo []}) then {
+        diag_log "[Debug] _getRoads returned no results.";
+        _testRoads = []; // Ensure it's initialized to an empty array
+    } else {
+        diag_log format ["[Debug] _getRoads returned: %1", _testRoads];
+    };
+} else {
+    diag_log "[Error] _getRoads is not defined!";
+    _testRoads = []; // Fallback to an empty array
+};
+
+// Count buildings and roads for debugging
+private _buildingCount = count _testBuildings;
+private _roadCount = count _testRoads;
+
+diag_log format ["[Debug] Found %1 buildings.", _buildingCount];
+diag_log format ["[Debug] Found %1 roads.", _roadCount];
+
+// Spawn enemies if objects are found
+if (_buildingCount > 0) then {
+    {[_x, "building"] call _spawnEnemies;} forEach _testBuildings;
+};
+
+if (_roadCount > 0) then {
+    {[_x, "road"] call _spawnEnemies;} forEach _testRoads;
+};
+
+
+// Ensure _getRoads is initialized and test
+private _testRoads = [];
+if (!isNil "_getRoads") then {
+    diag_log "[Debug] Testing _getRoads...";
+    _testRoads = _getRoads call {};
+    if (isNil "_testRoads" || {_testRoads isEqualTo []}) then {
+        diag_log "[Debug] _getRoads returned no results.";
+        _testRoads = []; // Ensure it's initialized to an empty array
+    } else {
+        diag_log format ["[Debug] _getRoads returned: %1", _testRoads];
+    };
+} else {
+    diag_log "[Error] _getRoads is not defined!";
+};
+
+// Count buildings and roads for debugging
+private _buildingCount = count _testBuildings;
+private _roadCount = count _testRoads;
+
+diag_log format ["[Debug] Found %1 buildings.", _buildingCount];
+diag_log format ["[Debug] Found %1 roads.", _roadCount];
+
+// Proceed with spawning if objects are found
+if (_buildingCount > 0) then {
+    {[_x, "building"] call _spawnEnemies;} forEach _testBuildings;
+};
+
+if (_roadCount > 0) then {
+    {[_x, "road"] call _spawnEnemies;} forEach _testRoads;
+};
+
 
 // Function to spawn enemies near a building or road
 private _spawnEnemies = {
@@ -128,37 +213,6 @@ private _spawnEnemies = {
             "O_G_Soldier_F", _spawnPos, [], 0.5, "FORM"
         ];
 
-        // Add MPKilled event handler with side-based colors
-        /*_enemy addMPEventHandler ["MPKilled", {
-            params ["_unit", "_killer", "_instigator", "_useEffects"];
-
-            // Helper function to determine side-based colors
-            private _getSideColor = {
-                params ["_unit"];
-                switch (side _unit) do {
-                    case west: { "#007BFF" };       // BLUFOR (Blue)
-                    case east: { "#FF0000" };       // OPFOR (Red)
-                    case resistance: { "#00FF00" }; // INDEPENDENT (Green)
-                    case civilian: { "#FFFF00" };   // CIVILIAN (Yellow)
-                    default { "#FFFFFF" };          // Default (White)
-                };
-            };
-
-            // Get colors for killer and victim
-            private _killerColor = if (!isNull _killer) then { [_killer] call _getSideColor } else { "#FFFFFF" };
-            private _victimColor = [_unit] call _getSideColor;
-
-            // Format the killfeed message
-            private _message = if (!isNull _killer) then {
-                format ["<t color='%1'>%2</t> was killed by <t color='%3'>%4</t>", _victimColor, name _unit, _killerColor, name _killer]
-            } else {
-                format ["<t color='%1'>%2</t> died.", _victimColor, name _unit];
-            };
-
-            // Call the killfeed function on all clients
-            ["fnc_showKillfeed", [_message, _killer, _unit]] remoteExec ["call", 0];
-        }];*/
-
         _activeEnemies pushBack _enemy;
 
         _enemy forceAddUniform _uniform;
@@ -194,15 +248,31 @@ private _spawnLoop = {
         } forEach _activeEnemies;
         _activeEnemies = _remainingEnemies;
 
-        // Correctly call the _getBuildings function
+        // Buildings
+        diag_log format ["[Debug] Is _getBuildings defined: %1", isNil "_getBuildings"];
+        diag_log "[Debug] Testing _getBuildings...";
         private _buildings = _getBuildings call {};
-        if (count _buildings > 0) then {
+        if (isNil "_buildings" || {_buildings isEqualTo []}) then {
+            diag_log "[Debug] No buildings found.";
+            _buildings = [];
+        };
+        private _buildingCount = count _buildings;
+        diag_log format ["[Debug] Found %1 buildings.", _buildingCount];
+        if (_buildingCount > 0) then {
             {[_x, "building"] call _spawnEnemies;} forEach _buildings;
         };
 
-        // Correctly call the _getRoads function
+        // Roads
+        diag_log format ["[Debug] Is _getRoads defined: %1", isNil "_getRoads"];
+        diag_log "[Debug] Testing _getRoads...";
         private _roads = _getRoads call {};
-        if (count _roads > 0) then {
+        if (isNil "_roads" || {_roads isEqualTo []}) then {
+            diag_log "[Debug] No roads found.";
+            _roads = [];
+        };
+        private _roadCount = count _roads;
+        diag_log format ["[Debug] Found %1 roads.", _roadCount];
+        if (_roadCount > 0) then {
             {[_x, "road"] call _spawnEnemies;} forEach _roads;
         };
 
@@ -211,5 +281,5 @@ private _spawnLoop = {
     };
 };
 
-// Start the spawn loop
+// Call the spawn loop
 _spawnLoop call _spawnLoop;
