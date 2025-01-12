@@ -6,6 +6,7 @@
 [] execVM "killTicker.sqf";
 [] execVM "staminaRegen.sqf";
 [] execVM "enemySpawnScript.sqf";
+[] execVM "globalCleanup.sqf";
 
 diag_log "Initializing EntityKilled Debugging...";
 

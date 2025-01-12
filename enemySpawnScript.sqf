@@ -11,6 +11,9 @@ params [
     ["_enemyCountRange", [1, 5]],                  // Array [minEnemies, maxEnemies] to spawn per building
     ["_minDistance", 100],                         // Minimum spawn distance from player (meters)
     ["_maxDistance", 300],                         // Maximum spawn distance from player (meters)
+    ["_maxTotalEnemies", 25],                      // Maximum total number of enemies allowed at the same time
+    ["_spawnCheckInterval", 120],                  // Interval in seconds to recheck and spawn enemies if under the limit
+    ["_cleanupDistance", 500],                     // Distance from player at which enemies are removed
     ["_equipmentPool", [                           // Array of equipment loadouts
         ["arifle_Katiba_F", ["30Rnd_65x39_caseless_green"]],
         ["arifle_MX_F", ["30Rnd_65x39_caseless_mag"]],
@@ -53,6 +56,7 @@ params [
 // Create a global set to track processed buildings
 private _processedBuildings = []; // Stores buildings with cooldowns
 private _cooldownTime = 300; // Cooldown time in seconds
+private _activeEnemies = []; // Tracks currently active enemies
 
 // Function to spawn enemies near a building
 private _spawnEnemies = {
@@ -71,6 +75,11 @@ private _spawnEnemies = {
 
     // Add building to the processed list
     _processedBuildings pushBack [_building, _currentTime];
+
+    // Check current enemy count
+    if (count _activeEnemies >= _maxTotalEnemies) exitWith {
+        diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping building at %2.", _maxTotalEnemies, getPos _building];
+    };
 
     // Random chance to spawn
     if (random 1 > _spawnChance) exitWith {};
@@ -104,6 +113,7 @@ private _spawnEnemies = {
             0.5,
             "FORM"
         ];
+        _activeEnemies pushBack _enemy;
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", typeOf _enemy, _spawnPos];
 
         // Apply uniform, vest, bag, headgear, and loadout
@@ -124,6 +134,9 @@ private _spawnEnemies = {
         private _maxSkill = _skillRange select 1;
         private _skill = random (_maxSkill - _minSkill) + _minSkill;
         _enemy setSkill _skill;
+
+        // Clean up inactive enemies
+        _activeEnemies = _activeEnemies select {alive _x};
     };
 };
 
@@ -134,14 +147,29 @@ private _getBuildings = {
 };
 
 // Main Execution
-private _buildings = _getBuildings call _getBuildings;
-diag_log format ["[AI Spawner] Found %1 buildings within range.", count _buildings];
+private _spawnLoop = {
+    while {true} do {
+        private _buildings = _getBuildings call _getBuildings;
+        diag_log format ["[AI Spawner] Found %1 buildings within range.", count _buildings];
 
-if (count _buildings > 0) then {
-    {
-        [_x] call _spawnEnemies;
-    } forEach _buildings;
-    diag_log "[AI Spawner] Enemy spawn script executed.";
-} else {
-    diag_log "[AI Spawner] No buildings found within range. Exiting script.";
+        if (count _buildings > 0) then {
+            {
+                [_x] call _spawnEnemies;
+            } forEach _buildings;
+        };
+
+        // Clean up inactive enemies
+        _activeEnemies = _activeEnemies select {alive _x && (player distance _x <= _cleanupDistance)};
+        {
+            if (player distance _x > _cleanupDistance) then {
+                deleteVehicle _x;
+                diag_log format ["[AI Spawner] Deleted enemy %1 as it left the cleanup range.", _x];
+            };
+        } forEach _activeEnemies;
+
+        diag_log "[AI Spawner] Rechecking for spawns.";
+        sleep _spawnCheckInterval;
+    };
 };
+
+_spawnLoop call _spawnLoop;
