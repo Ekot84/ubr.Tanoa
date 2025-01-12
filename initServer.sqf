@@ -11,14 +11,20 @@ private _maxSpawnDistance = 1000;      // Maximum spawn distance from players
 private _fallbackMultiplier = 2;       // Multiplier for fallback radius
 private _cooldownTime = 600;           // Cooldown time in seconds for spawn zones
 
+// Ensure _spawnedZones is initialized
+if (isNil "spawnedZones") then {
+    spawnedZones = [];
+};
+
 // Variables for managing zones
-private _spawnedZones = [];            // Stores active zones as [position, group, timestamp]
-private _cooldownZones = [];           // Stores cooldown zones as [position, cooldownEndTime]
+if (isNil "_spawnedZones") then { _spawnedZones = []; }; // Ensure initialized
+if (isNil "_cooldownZones") then { _cooldownZones = []; }; // Ensure initialized
+
 
 // Function to log messages with consistent prefix
 private _log = {
     params ["_message"];
-if (isNil "_message") exitWith { diag_log "[AI Spawn System] Error: Log message is undefined."; };
+    if (isNil "_message") exitWith { diag_log "[AI Spawn System] Error: Log message is undefined."; };
     diag_log format ["[AI Spawn System] %1", _message];
 };
 
@@ -43,28 +49,28 @@ private _getRandomPosition = {
 
 // Function to clean up inactive zones
 private _cleanupZones = {
-    if (isNil "_spawnedZones") then {
-        _spawnedZones = [];
-    };
-    if (isNil "_spawnedZones" || {count _spawnedZones == 0}) exitWith {
+    if (isNil "spawnedZones" || {count spawnedZones == 0}) exitWith {
         ["No zones available for cleanup."] call _log;
     };
 
-    _spawnedZones = _spawnedZones select {
+    spawnedZones = spawnedZones select {
         params ["_zone"];
 
         // Validate _zone structure
         if (isNil "_zone" || {count _zone < 2}) exitWith {
-            diag_log "[AI Spawn System] Error: Invalid or undefined zone.";
+            diag_log "[AI Spawn System] Error: Invalid or undefined zone structure.";
             false
         };
-if (isNil "_zone") exitWith { diag_log "[AI Spawn System] Error: Zone is undefined."; };
-        private _group = if (count _zone > 1) then { _zone select 1 } else { diag_log "[AI Spawn System] Error: Invalid zone structure."; nil };
+
         private _zonePos = _zone select 0;
+        private _group = _zone select 1;
 
-        if (isNull _group) exitWith { false };
+        if (isNull _group || {count _zonePos != 3}) exitWith {
+            diag_log "[AI Spawn System] Warning: Invalid group or position in zone.";
+            false
+        };
 
-        // Remove if no players nearby
+        // Check if no players are nearby
         if ((allPlayers findIf {(_x distance _zonePos) < _cleanupDistance}) == -1) then {
             // Delete all units in the group
             {
@@ -79,6 +85,7 @@ if (isNil "_zone") exitWith { diag_log "[AI Spawn System] Error: Zone is undefin
         };
     };
 };
+
 
 // Function to check cooldowns
 private _isOnCooldown = {
@@ -130,13 +137,7 @@ if (isServer) then {
                         };
 
                         // Track zone
-                        if (!isNull _group && {count _spawnPos == 3}) then {
-    _spawnedZones pushBack [_spawnPos, _group, diag_tickTime];
-    _cooldownZones pushBack [_spawnPos, diag_tickTime + _cooldownTime];
-    ["Spawned " + str _enemyCount + " enemies at " + str _spawnPos] call _log;
-} else {
-    ["Error: Invalid group or spawn position. Zone not tracked."] call _log;
-};
+                        _spawnedZones pushBack [_spawnPos, _group, diag_tickTime];
                         _cooldownZones pushBack [_spawnPos, diag_tickTime + _cooldownTime];
                         ["Spawned " + str _enemyCount + " enemies at " + str _spawnPos] call _log;
                     } else {
