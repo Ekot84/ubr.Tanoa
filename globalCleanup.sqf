@@ -1,10 +1,15 @@
-// Global Cleanup Script
-// Set cleanup timer
-private _cleanupTime = 600; // 10 minutes in seconds
+// Global Cleanup Script with Equipment Cleanup
+// Set cleanup timers
+private _corpseCleanupTime = 60; // 10 minutes for corpses (600)
+private _equipmentCleanupTime = 60; // 10 minutes for equipment (600)
+private _playerDistance = 500; // Distance in meters for equipment cleanup
 
 // Variables
 private _deadBodies = []; // Track dead bodies
-private _cleanupTimes = []; // Corresponding cleanup times for each body
+private _cleanupTimesBodies = []; // Corresponding cleanup times for each body
+
+private _droppedEquipment = []; // Track dropped equipment
+private _cleanupTimesEquipment = []; // Corresponding cleanup times for each equipment
 
 // Main loop
 while {true} do {
@@ -15,7 +20,7 @@ while {true} do {
     {
         if (!(_x in _deadBodies)) then {
             _deadBodies pushBack _x;
-            _cleanupTimes pushBack (time + _cleanupTime);
+            _cleanupTimesBodies pushBack (time + _corpseCleanupTime);
         };
     } forEach _allDeadBodies;
 
@@ -23,14 +28,40 @@ while {true} do {
     {
         private _index = _forEachIndex;
         private _body = _x;
-        private _cleanupTime = _cleanupTimes select _index;
+        private _cleanupTime = _cleanupTimesBodies select _index;
 
         if (time >= _cleanupTime) then {
             deleteVehicle _body;
             _deadBodies deleteAt _index;
-            _cleanupTimes deleteAt _index;
+            _cleanupTimesBodies deleteAt _index;
         };
     } forEach _deadBodies;
+
+    // Get all objects on the ground (weapons, magazines, etc.)
+    private _allEquipment = nearestObjects [[0,0,0], ["WeaponHolderSimulated", "WeaponHolder", "GroundWeaponHolder", "Box_NATO_Ammo_F"], 50000];
+
+    // Update equipment list and their cleanup times
+    {
+        if (!(_x in _droppedEquipment)) then {
+            _droppedEquipment pushBack _x;
+            _cleanupTimesEquipment pushBack (time + _equipmentCleanupTime);
+        };
+    } forEach _allEquipment;
+
+    // Cleanup expired equipment
+    {
+        private _index = _forEachIndex;
+        private _equipment = _x;
+        private _cleanupTime = _cleanupTimesEquipment select _index;
+
+        // Check if no players are within the specified distance
+        private _playersNearby = allPlayers select {(_x distance _equipment) <= _playerDistance};
+        if ((_playersNearby isEqualTo []) && (time >= _cleanupTime)) then {
+            deleteVehicle _equipment;
+            _droppedEquipment deleteAt _index;
+            _cleanupTimesEquipment deleteAt _index;
+        };
+    } forEach _droppedEquipment;
 
     sleep 10; // Check every 10 seconds to reduce performance impact
 };

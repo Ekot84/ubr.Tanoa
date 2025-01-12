@@ -2,7 +2,7 @@
     Script: Enemy Spawn Near Buildings
     Filename: enemySpawnScript.sqf
     Author: Eko & ChatGPT
-    Description: Spawns enemies near buildings with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance.
+    Description: Spawns enemies near buildings with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance. Includes despawning logic based on distance.
 */
 
 // Configuration Parameters
@@ -134,9 +134,6 @@ private _spawnEnemies = {
         private _maxSkill = _skillRange select 1;
         private _skill = random (_maxSkill - _minSkill) + _minSkill;
         _enemy setSkill _skill;
-
-        // Clean up inactive enemies
-        _activeEnemies = _activeEnemies select {alive _x};
     };
 };
 
@@ -149,6 +146,19 @@ private _getBuildings = {
 // Main Execution
 private _spawnLoop = {
     while {true} do {
+        // Clean up enemies outside the cleanup distance
+        private _remainingEnemies = [];
+        {
+            if (player distance _x > _cleanupDistance) then {
+                deleteVehicle _x;
+                diag_log format ["[AI Spawner] Deleted enemy %1 as it left the cleanup range.", _x];
+            } else {
+                _remainingEnemies pushBack _x; // Keep enemies within the range
+            };
+        } forEach _activeEnemies;
+        _activeEnemies = _remainingEnemies; // Update the active enemies list
+
+        // Recheck for spawns
         private _buildings = _getBuildings call _getBuildings;
         diag_log format ["[AI Spawner] Found %1 buildings within range.", count _buildings];
 
@@ -157,15 +167,6 @@ private _spawnLoop = {
                 [_x] call _spawnEnemies;
             } forEach _buildings;
         };
-
-        // Clean up inactive enemies
-        _activeEnemies = _activeEnemies select {alive _x && (player distance _x <= _cleanupDistance)};
-        {
-            if (player distance _x > _cleanupDistance) then {
-                deleteVehicle _x;
-                diag_log format ["[AI Spawner] Deleted enemy %1 as it left the cleanup range.", _x];
-            };
-        } forEach _activeEnemies;
 
         diag_log "[AI Spawner] Rechecking for spawns.";
         sleep _spawnCheckInterval;
