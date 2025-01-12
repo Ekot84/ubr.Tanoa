@@ -50,9 +50,27 @@ params [
     ["_skillRange", [0.2, 0.8]]                    // Array [minSkill, maxSkill] for enemy skill level
 ];
 
+// Create a global set to track processed buildings
+private _processedBuildings = []; // Stores buildings with cooldowns
+private _cooldownTime = 300; // Cooldown time in seconds
+
 // Function to spawn enemies near a building
 private _spawnEnemies = {
     params ["_building"];
+
+    // Skip if the building has already been processed
+    private _currentTime = time;
+    // Check if the building is on cooldown
+    private _foundBuilding = _processedBuildings select { _x select 0 == _building };
+    if (!isNil "_foundBuilding" && { _currentTime - (_foundBuilding select 0 select 1) < _cooldownTime }) exitWith {
+        diag_log format ["[AI Spawner] Skipped building at %1 due to cooldown.", getPos _building];
+    };
+
+    // Remove expired cooldowns
+    _processedBuildings = _processedBuildings select { _currentTime - (_x select 1) < _cooldownTime };
+
+    // Add building to the processed list
+    _processedBuildings pushBack [_building, _currentTime];
 
     // Random chance to spawn
     if (random 1 > _spawnChance) exitWith {};
