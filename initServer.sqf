@@ -43,26 +43,28 @@ private _getRandomPosition = {
 
 // Function to clean up inactive zones
 private _cleanupZones = {
-    if (count _spawnedZones == 0) exitWith {
+    if (isNil "_spawnedZones") then {
+        _spawnedZones = [];
+    };
+    if (isNil "_spawnedZones" || {count _spawnedZones == 0}) exitWith {
         ["No zones available for cleanup."] call _log;
     };
 
     _spawnedZones = _spawnedZones select {
         params ["_zone"];
+
+        // Validate _zone structure
         if (isNil "_zone" || {count _zone < 2}) exitWith {
             diag_log "[AI Spawn System] Error: Invalid or undefined zone.";
             false
         };
+if (isNil "_zone") exitWith { diag_log "[AI Spawn System] Error: Zone is undefined."; };
+        private _group = if (count _zone > 1) then { _zone select 1 } else { diag_log "[AI Spawn System] Error: Invalid zone structure."; nil };
+        private _zonePos = _zone select 0;
 
-        private _group = _zone select 1; // Retrieve group
-        private _zonePos = _zone select 0; // Retrieve position
+        if (isNull _group) exitWith { false };
 
-        if (isNull _group) exitWith {
-            diag_log "[AI Spawn System] Warning: Group is null for zone at " + str _zonePos;
-            false
-        };
-
-        // Check if no players are nearby
+        // Remove if no players nearby
         if ((allPlayers findIf {(_x distance _zonePos) < _cleanupDistance}) == -1) then {
             // Delete all units in the group
             {
@@ -73,11 +75,10 @@ private _cleanupZones = {
             ["Cleaned up zone at " + str _zonePos] call _log;
             false // Remove this zone from the list
         } else {
-            true // Keep this zone in the list
+            true // Keep the zone in the list
         };
     };
 };
-
 
 // Function to check cooldowns
 private _isOnCooldown = {
@@ -129,7 +130,13 @@ if (isServer) then {
                         };
 
                         // Track zone
-                        _spawnedZones pushBack [_spawnPos, _group, diag_tickTime];
+                        if (!isNull _group && {count _spawnPos == 3}) then {
+    _spawnedZones pushBack [_spawnPos, _group, diag_tickTime];
+    _cooldownZones pushBack [_spawnPos, diag_tickTime + _cooldownTime];
+    ["Spawned " + str _enemyCount + " enemies at " + str _spawnPos] call _log;
+} else {
+    ["Error: Invalid group or spawn position. Zone not tracked."] call _log;
+};
                         _cooldownZones pushBack [_spawnPos, diag_tickTime + _cooldownTime];
                         ["Spawned " + str _enemyCount + " enemies at " + str _spawnPos] call _log;
                     } else {
