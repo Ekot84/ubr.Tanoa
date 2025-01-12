@@ -1,6 +1,6 @@
 /*
     Script: Enemy Spawn Near Buildings and Roads
-    Version: 0.19
+    Version: 0.21
     Filename: enemySpawnScript.sqf
     Author: Eko & ChatGPT
     Description: Spawns enemies near buildings or as patrols on roads with configurable spawn chance, quantity, random equipment, random skill, and player spawn distance. Includes despawning logic based on distance and MP event handling for kills and hits.
@@ -55,10 +55,22 @@ params [
 ];
 
 // Create global variables to track state
-private _processedBuildings = []; // Stores buildings with cooldowns
-private _processedRoads = [];     // Stores roads with cooldowns
+private _processedBuildings = [];
+private _processedRoads = [];
 private _cooldownTime = 300;      // Cooldown time in seconds
 private _activeEnemies = [];      // Tracks currently active enemies
+
+// Function to get roads within range
+private _getRoads = {
+    private _playerPos = getPosATL player;
+    nearestObjects [_playerPos, ["RoadSegment"], _maxDistance]
+};
+
+// Function to get buildings within range
+private _getBuildings = {
+    private _playerPos = getPosATL player;
+    nearestObjects [_playerPos, ["House"], _maxDistance]
+};
 
 // Function to spawn enemies near a building or road
 private _spawnEnemies = {
@@ -69,7 +81,7 @@ private _spawnEnemies = {
     private _processedLocations = if (_type == "building") then {_processedBuildings} else {_processedRoads};
 
     private _foundLocation = _processedLocations select { _x select 0 == _location };
-    if (!isNil "_foundLocation" && { _currentTime - (_foundLocation select 0 select 1) < _cooldownTime }) exitWith {
+    if (!isNil "_foundLocation" && { _currentTime - (_foundLocation select 1) < _cooldownTime }) exitWith {
         diag_log format ["[AI Spawner] Skipped %1 at %2 due to cooldown.", _type, getPos _location];
     };
 
@@ -116,31 +128,36 @@ private _spawnEnemies = {
             "O_G_Soldier_F", _spawnPos, [], 0.5, "FORM"
         ];
 
-        // Add MP event handler for hits (commented out)
-        /*
-        _enemy addMPEventHandler ["MPHit", {
-            params ["_unit", "_shooter", "_projectile", "_position"];
-            diag_log format ["[AI Spawner] %1 was hit by %2 with %3 at position %4", _unit, _shooter, _projectile, _position];
-            private _message = format ["%1 hit %2 with %3", name _shooter, name _unit, _projectile];
-            ["showKillfeed.sqf", [_message]] remoteExec ["execVM", 0];
-        }];
-        */
+        // Add MPKilled event handler with side-based colors
+        /*_enemy addMPEventHandler ["MPKilled", {
+            params ["_unit", "_killer", "_instigator", "_useEffects"];
 
-// Add MPKilled event handler to spawned enemies
-_enemy addMPEventHandler ["MPKilled", {
-    params ["_unit", "_killer", "_instigator", "_useEffects"];
+            // Helper function to determine side-based colors
+            private _getSideColor = {
+                params ["_unit"];
+                switch (side _unit) do {
+                    case west: { "#007BFF" };       // BLUFOR (Blue)
+                    case east: { "#FF0000" };       // OPFOR (Red)
+                    case resistance: { "#00FF00" }; // INDEPENDENT (Green)
+                    case civilian: { "#FFFF00" };   // CIVILIAN (Yellow)
+                    default { "#FFFFFF" };          // Default (White)
+                };
+            };
 
-    // Format the killfeed message
-    private _message = if (!isNull _killer) then {
-        format ["<t color='#00FF00'>%1</t> was killed by <t color='#FF0000'>%2</t>", name _unit, name _killer]
-    } else {
-        format ["<t color='#00FF00'>%1</t> died.", name _unit];
-    };
+            // Get colors for killer and victim
+            private _killerColor = if (!isNull _killer) then { [_killer] call _getSideColor } else { "#FFFFFF" };
+            private _victimColor = [_unit] call _getSideColor;
 
-    // Call the killfeed function on all clients
-    ["fnc_showKillfeed", [_message, _killer, _unit]] remoteExec ["call", 0];
-}];
+            // Format the killfeed message
+            private _message = if (!isNull _killer) then {
+                format ["<t color='%1'>%2</t> was killed by <t color='%3'>%4</t>", _victimColor, name _unit, _killerColor, name _killer]
+            } else {
+                format ["<t color='%1'>%2</t> died.", _victimColor, name _unit];
+            };
 
+            // Call the killfeed function on all clients
+            ["fnc_showKillfeed", [_message, _killer, _unit]] remoteExec ["call", 0];
+        }];*/
 
         _activeEnemies pushBack _enemy;
 
@@ -163,21 +180,6 @@ _enemy addMPEventHandler ["MPKilled", {
     };
 };
 
-// The rest of the script remains unchanged (e.g., road/building functions and main execution loop).
-
-
-// Function to get roads within range
-private _getRoads = {
-    private _playerPos = getPosATL player;
-    nearestObjects [_playerPos, ["RoadSegment"], _maxDistance]
-};
-
-// Function to get buildings within range
-private _getBuildings = {
-    private _playerPos = getPosATL player;
-    nearestObjects [_playerPos, ["House"], _maxDistance]
-};
-
 // Main Execution
 private _spawnLoop = {
     while {true} do {
@@ -192,12 +194,14 @@ private _spawnLoop = {
         } forEach _activeEnemies;
         _activeEnemies = _remainingEnemies;
 
-        private _buildings = _getBuildings call _getBuildings;
+        // Correctly call the _getBuildings function
+        private _buildings = _getBuildings call {};
         if (count _buildings > 0) then {
             {[_x, "building"] call _spawnEnemies;} forEach _buildings;
         };
 
-        private _roads = _getRoads call _getRoads;
+        // Correctly call the _getRoads function
+        private _roads = _getRoads call {};
         if (count _roads > 0) then {
             {[_x, "road"] call _spawnEnemies;} forEach _roads;
         };
@@ -207,4 +211,5 @@ private _spawnLoop = {
     };
 };
 
+// Start the spawn loop
 _spawnLoop call _spawnLoop;

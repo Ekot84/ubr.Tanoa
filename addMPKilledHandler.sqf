@@ -7,11 +7,27 @@
                 _x addMPEventHandler ["MPKilled", {
                     params ["_unit", "_killer", "_instigator", "_useEffects"];
 
+                    // Helper function to get side color
+                    private _getSideColor = {
+                        params ["_unit"];
+                        switch (side _unit) do {
+                            case west: { "#007BFF" };       // BLUFOR (Blue)
+                            case east: { "#FF0000" };       // OPFOR (Red)
+                            case resistance: { "#00FF00" }; // INDEPENDENT (Green)
+                            case civilian: { "#FFFF00" };   // CIVILIAN (Yellow)
+                            default { "#FFFFFF" };          // Default (White)
+                        };
+                    };
+
+                    // Determine colors for killer and victim
+                    private _killerColor = if (!isNull _killer) then { [_killer] call _getSideColor } else { "#FFFFFF" };
+                    private _victimColor = if (!isNull _unit) then { [_unit] call _getSideColor } else { "#FFFFFF" };
+
                     // Format the killfeed message
                     private _message = if (!isNull _killer) then {
-                        format ["<t color='#00FF00'>%1</t> was killed by <t color='#FF0000'>%2</t>", name _unit, name _killer]
+                        format ["<t color='%1'>%2</t> was killed by <t color='%3'>%4</t>", _victimColor, name _unit, _killerColor, name _killer]
                     } else {
-                        format ["<t color='#00FF00'>%1</t> died.", name _unit];
+                        format ["<t color='%1'>%2</t> died.", _victimColor, name _unit];
                     };
 
                     // Call the killfeed function on all clients
