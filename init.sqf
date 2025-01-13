@@ -3,12 +3,10 @@
 [] execVM "arcadeHealth.sqf"; // Optional: Arcade health system
 [] execVM "healthbartest.sqf";
 [] execVM "kill_death_counter.sqf";
+[] execVM "killTicker.sqf";
 [] execVM "staminaRegen.sqf";
 [] execVM "enemySpawnScript.sqf";
 [] execVM "globalCleanup.sqf";
-[] execVM "functions.sqf";
-//[] execVM "addMPKilledHandler.sqf"; //Moved to initServer.sqf
-
 
 diag_log "Initializing EntityKilled Debugging...";
 
