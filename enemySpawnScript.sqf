@@ -157,13 +157,14 @@ private _spawnEnemies = {
 // Function to get roads within range
 private _getRoads = {
     private _playerPos = getPosATL player;
-    nearestObjects [_playerPos, ["RoadSegment"], _maxDistance]
+    nearestTerrainObjects [_playerPos, ["ROAD", "POWER LINES", "BUSSTOP", "MAIN ROAD", "TRAIL", "WALL"], _maxDistance]
 };
 
 // Function to get buildings within range
 private _getBuildings = {
     private _playerPos = getPosATL player;
-    nearestObjects [_playerPos, ["House"], _maxDistance]
+    //nearestObjects [_playerPos, ["House", "Building"], _maxDistance]
+    nearestTerrainObjects [_playerPos, ["BUILDING", "BUNKER", "CHAPEL", "CHURCH", "FORTRESS", "FUELSTATION", "HOSPITAL", "HOUSE", "RUIN", "SHIPWRECK", "TOURISM", "TRANSMITTER", "VIEW-TOWER",  "WATERTOWER"], _maxDistance]
 };
 
 // Main Execution
