@@ -60,8 +60,7 @@ private _processedRoads = [];     // Stores roads with cooldowns
 private _cooldownTime = 300;      // Cooldown time in seconds
 private _activeEnemies = [];      // Tracks currently active enemies
 
-// Function to spawn enemies near a building or road
-// Updated Function to Spawn Enemies Near a Building or Road
+
 private _spawnEnemies = {
     params ["_location", "_type"];
 
@@ -108,17 +107,20 @@ private _spawnEnemies = {
     for "_i" from 1 to _enemyCount do {
         // Randomize spawn position near location
         private _spawnPos = _location getPos [random 10, random 360];
-        
+
         // Ensure spawn distance from player
         if (player distance _spawnPos < _minDistance) exitWith {};
 
-        // Randomize enemy loadout
-        private _equipment = selectRandom _equipmentPool;
-        private _uniform = selectRandom _uniformPool;
-        private _vest = selectRandom _vestPool;
-        private _bag = selectRandom _bagPool;
-        private _headgear = selectRandom _headgearPool;
-        private _medkit = selectRandom _medkits;
+        // Get nearest town name
+        private _nearestTown = "UnknownArea";
+        private _locationName = nearestLocations [_spawnPos, ["NameCity", "NameVillage", "NameLocal"], 1000];
+        if (count _locationName > 0) then {
+            _nearestTown = text (_locationName select 0);
+        };
+
+        // Maintain global counter for unique names
+        if (isNil "ENEMY_COUNTER") then { ENEMY_COUNTER = 0; };
+        ENEMY_COUNTER = ENEMY_COUNTER + 1;
 
         // Create enemy unit
         private _enemy = createGroup east createUnit [
@@ -129,66 +131,51 @@ private _spawnEnemies = {
             "FORM"
         ];
 
+        // Assign a unique name to the enemy
+        private _enemyName = format ["%1_%2", _nearestTown, ENEMY_COUNTER];
+        _enemy setName _enemyName;
+
+        diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", _enemyName, _spawnPos];
+
         // Add MP event handler to track kills
-        /*_enemy addMPEventHandler ["MPKilled", {
-            params ["_unit", "_killer", "_instigator", "_useEffects"];
-            private _sideDeadUnit = side group _unit;
-            private _sideKiller = side group _killer;
-            private _deadUnitName = [_unit] call BIS_fnc_getName;
-            private _killerName = [_killer] call BIS_fnc_getName;
-            //diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _unit, _sideKiller, _killer];
-            diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+_enemy addMPEventHandler ["MPKilled", {
+    params ["_unit", "_killer", "_instigator", "_useEffects"];
 
-            // Check and delete group if empty
-            private _group = group _unit;
-            if ((count units _group) == 0) then {
-                deleteGroup _group;
-                diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
-            };
-        }];*/
-        _enemy addMPEventHandler ["MPKilled", {
-        params ["_unit", "_killer", "_instigator", "_useEffects"];
-    
-        // Validate inputs
-        if (isNull _unit) exitWith {
-            diag_log "[AI Spawner] Kill event handler triggered with null unit.";
-        };
-        if (isNull _killer) then {
-            diag_log "[AI Spawner] Killer is null, likely an environmental death.";
-        };
+    if (isNull _unit) exitWith { diag_log "[AI Spawner] Kill event handler triggered with null unit."; };
+    if (isNull _killer) then { diag_log "[AI Spawner] Killer is null, likely an environmental death."; };
 
-        // Get side and names
-        private _sideDeadUnit = side group _unit;
-        private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
-        private _deadUnitName = [_unit] call BIS_fnc_getName;
-        private _killerName = if (isNull _killer) then {"Environment"} else {[_killer] call BIS_fnc_getName};
+    // Get sides and names
+    private _sideDeadUnit = side group _unit;
+    private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
+    private _deadUnitName = name _unit; // Directly fetch the name set by setName
+    private _killerName = if (isNull _killer) then {"Environment"} else {name _killer};
 
-        // Log kill event
-        diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+    // Log kill event
+    diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
 
-        // Check and delete group if empty
-        private _group = group _unit;
-        if (!isNull _group && {count units _group == 0}) then {
-            deleteGroup _group;
-            diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
-        };
-    }];
+    // Check and delete group if empty
+    private _group = group _unit;
+    if (!isNull _group && {count units _group == 0}) then {
+        deleteGroup _group;
+        diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
+    };
+}];
 
         _activeEnemies pushBack _enemy;
-        diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", typeOf _enemy, _spawnPos];
 
         // Apply uniform, vest, bag, headgear, and loadout
-        _enemy forceAddUniform _uniform;
-        _enemy addVest _vest;
-        _enemy addBackpack _bag;
-        _enemy addHeadgear _headgear;
+        _enemy forceAddUniform selectRandom _uniformPool;
+        _enemy addVest selectRandom _vestPool;
+        _enemy addBackpack selectRandom _bagPool;
+        _enemy addHeadgear selectRandom _headgearPool;
 
+        private _equipment = selectRandom _equipmentPool;
         if (!isNil "_equipment") then {
             _enemy addWeapon (_equipment select 0);
             {_enemy addMagazine _x} forEach (_equipment select 1);
         };
 
-        _enemy addItem _medkit;
+        _enemy addItem selectRandom _medkits;
 
         // Randomize skill level
         private _minSkill = _skillRange select 0;
@@ -197,6 +184,7 @@ private _spawnEnemies = {
         _enemy setSkill _skill;
     };
 };
+
 
 // Function to get roads within range
 private _getRoads = {
