@@ -129,6 +129,11 @@ private _spawnEnemies = {
         _enemy addMPEventHandler ["MPKilled", {
             params ["_unit", "_killer", "_instigator", "_useEffects"];
             diag_log format ["[AI Spawner] Enemy killed: %1 by %2", _unit, _killer];
+            
+                if ((count units _group) == 0) then {
+                deleteGroup _group;
+                diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
+                };
         }];
         _activeEnemies pushBack _enemy;
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", typeOf _enemy, _spawnPos];
