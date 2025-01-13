@@ -61,15 +61,23 @@ private _cooldownTime = 300;      // Cooldown time in seconds
 private _activeEnemies = [];      // Tracks currently active enemies
 
 // Function to spawn enemies near a building or road
+// Updated Function to Spawn Enemies Near a Building or Road
 private _spawnEnemies = {
     params ["_location", "_type"];
+
+    // Check current enemy count
+    if (count _activeEnemies >= _maxTotalEnemies) exitWith {
+        diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping %2 at %3.", _maxTotalEnemies, _type, getPos _location];
+    };
 
     // Skip if the location has already been processed
     private _currentTime = time;
     private _processedLocations = if (_type == "building") then {_processedBuildings} else {_processedRoads};
 
     private _foundLocation = _processedLocations select { _x select 0 == _location };
-    if (!isNil "_foundLocation" && { _currentTime - (_foundLocation select 0 select 1) < _cooldownTime }) exitWith {
+
+    // Ensure _foundLocation is valid before accessing its elements
+    if ((count _foundLocation > 0) && { _currentTime - (_foundLocation select 0 select 1) < _cooldownTime }) exitWith {
         diag_log format ["[AI Spawner] Skipped %1 at %2 due to cooldown.", _type, getPos _location];
     };
 
@@ -78,11 +86,6 @@ private _spawnEnemies = {
         _processedBuildings = _processedBuildings select { _currentTime - (_x select 1) < _cooldownTime };
     } else {
         _processedRoads = _processedRoads select { _currentTime - (_x select 1) < _cooldownTime };
-    };
-
-    // Check current enemy count
-    if (count _activeEnemies >= _maxTotalEnemies) exitWith {
-        diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping %2 at %3.", _maxTotalEnemies, _type, getPos _location];
     };
 
     // Random chance to spawn
@@ -99,6 +102,7 @@ private _spawnEnemies = {
     private _minEnemies = _enemyCountRange select 0;
     private _maxEnemies = _enemyCountRange select 1;
     private _enemyCount = floor (random (_maxEnemies - _minEnemies + 1)) + _minEnemies;
+
     diag_log format ["[AI Spawner] Spawning %1 enemies near %2 at %3", _enemyCount, _type, getPos _location];
 
     for "_i" from 1 to _enemyCount do {
@@ -126,15 +130,50 @@ private _spawnEnemies = {
         ];
 
         // Add MP event handler to track kills
-        _enemy addMPEventHandler ["MPKilled", {
+        /*_enemy addMPEventHandler ["MPKilled", {
             params ["_unit", "_killer", "_instigator", "_useEffects"];
-            diag_log format ["[AI Spawner] Enemy killed: %1 by %2", _unit, _killer];
-            
-                if ((count units _group) == 0) then {
+            private _sideDeadUnit = side group _unit;
+            private _sideKiller = side group _killer;
+            private _deadUnitName = [_unit] call BIS_fnc_getName;
+            private _killerName = [_killer] call BIS_fnc_getName;
+            //diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _unit, _sideKiller, _killer];
+            diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+
+            // Check and delete group if empty
+            private _group = group _unit;
+            if ((count units _group) == 0) then {
                 deleteGroup _group;
                 diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
-                };
-        }];
+            };
+        }];*/
+        _enemy addMPEventHandler ["MPKilled", {
+        params ["_unit", "_killer", "_instigator", "_useEffects"];
+    
+        // Validate inputs
+        if (isNull _unit) exitWith {
+            diag_log "[AI Spawner] Kill event handler triggered with null unit.";
+        };
+        if (isNull _killer) then {
+            diag_log "[AI Spawner] Killer is null, likely an environmental death.";
+        };
+
+        // Get side and names
+        private _sideDeadUnit = side group _unit;
+        private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
+        private _deadUnitName = [_unit] call BIS_fnc_getName;
+        private _killerName = if (isNull _killer) then {"Environment"} else {[_killer] call BIS_fnc_getName};
+
+        // Log kill event
+        diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+
+        // Check and delete group if empty
+        private _group = group _unit;
+        if (!isNull _group && {count units _group == 0}) then {
+            deleteGroup _group;
+            diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
+        };
+    }];
+
         _activeEnemies pushBack _enemy;
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", typeOf _enemy, _spawnPos];
 
