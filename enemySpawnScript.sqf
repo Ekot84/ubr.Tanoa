@@ -159,28 +159,28 @@ private _spawnEnemies = {
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", _enemyName, _spawnPos];
 
         // Add MP event handler to track kills
-_enemy addMPEventHandler ["MPKilled", {
-    params ["_unit", "_killer", "_instigator", "_useEffects"];
+        _enemy addMPEventHandler ["MPKilled", {
+        params ["_unit", "_killer", "_instigator", "_useEffects"];
 
-    if (isNull _unit) exitWith { diag_log "[AI Spawner] Kill event handler triggered with null unit."; };
-    if (isNull _killer) then { diag_log "[AI Spawner] Killer is null, likely an environmental death."; };
+        if (isNull _unit) exitWith { diag_log "[AI Spawner] Kill event handler triggered with null unit."; };
+        if (isNull _killer) then { diag_log "[AI Spawner] Killer is null, likely an environmental death."; };
 
-    // Get sides and names
-    private _sideDeadUnit = side group _unit;
-    private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
-    private _deadUnitName = name _unit; // Directly fetch the name set by setName
-    private _killerName = if (isNull _killer) then {"Environment"} else {name _killer};
+        // Get sides and names
+        private _sideDeadUnit = side group _unit;
+        private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
+        private _deadUnitName = name _unit; // Directly fetch the name set by setName
+        private _killerName = if (isNull _killer) then {"Environment"} else {name _killer};
 
-    // Log kill event
-    diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+        // Log kill event
+        diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
 
-    // Check and delete group if empty
-    private _group = group _unit;
-    if (!isNull _group && {count units _group == 0}) then {
-        deleteGroup _group;
-        diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
-    };
-}];
+        // Check and delete group if empty
+        private _group = group _unit;
+        if (!isNull _group && {count units _group == 0}) then {
+            deleteGroup _group;
+            diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
+        };
+    }];
 
         _activeEnemies pushBack _enemy;
 
@@ -195,19 +195,19 @@ _enemy addMPEventHandler ["MPKilled", {
             _enemy addWeapon (_equipment select 0);
             {_enemy addMagazine _x} forEach (_equipment select 1);
         };
-        
+
         // Randomize secondary weapon loadout
         private _secondary = selectRandom _secondaryWeaponsPool;
         if (!isNil "_secondary") then {
             _enemy addWeapon (_secondary select 0);
             {_enemy addMagazine _x} forEach (_secondary select 1);
         };
-        
+
         // Assign grenades
         private _grenadeCount = floor (random 3) + 1; // Randomize grenade count (1-3)
         for "_i" from 1 to _grenadeCount do {
-        private _grenade = selectRandom _grenadePool;
-        _enemy addMagazine _grenade;
+            private _grenade = selectRandom _grenadePool;
+            _enemy addMagazine _grenade;
         };
 
         _enemy addItem selectRandom _medkits;
@@ -217,8 +217,19 @@ _enemy addMPEventHandler ["MPKilled", {
         private _maxSkill = _skillRange select 1;
         private _skill = random (_maxSkill - _minSkill) + _minSkill;
         _enemy setSkill _skill;
+
+        // ** Add Movement Logic for the Enemy **
+        _enemy spawn {
+            private _unit = _this;
+            while {alive _unit} do {
+                sleep selectRandom [15, 30]; // Random wait between moves (15 to 30 seconds)
+                private _newPos = position _unit getPos [random 50 + 10, random 360]; // New random position within 50m
+                _unit doMove _newPos;
+            };
+        };
     };
 };
+
 
 
 // Function to get roads within range
