@@ -9,23 +9,28 @@ spawnLootInHouse = {
         // Get all building positions for the house
         private _buildingPositions = [];
         private _index = 0;
-        private _maxPositions = 50; // Safeguard for maximum positions
+        private _maxPositions = 50; // Assume no building has more than 50 positions
 
-    while {_index < _maxPositions} do {
-    private _pos = _house buildingPos _index;
+        while {_index < _maxPositions} do {
+            private _pos = _house buildingPos _index;
 
-    // Exit the loop when no more valid positions are found
-    if (isNil "_pos") exitWith {};
+            // Exit the loop if no position is found
+            if (isNil "_pos") exitWith {};
 
-    // Add position to the array
-    _buildingPositions pushBack _pos;
-    _index = _index + 1;
-};
+            // Adjust position to prevent items from spawning underground
+            private _adjustedPos = _pos;
+            _adjustedPos set [2, (_pos select 2) + 0.1]; // Raise by 0.1 meters
 
-// Debugging: Log the number of positions found
-diag_log format ["[Loot System] Found %1 positions in house %2.", count _buildingPositions, _house];
+            _buildingPositions pushBack _adjustedPos;
+            _index = _index + 1;
+        };
 
-        // Limit loot spawn to 1-2 items per house
+        // Fallback if no building positions are valid
+        if (count _buildingPositions == 0) then {
+            _buildingPositions pushBack (getPos _house);
+        };
+
+        // Randomly determine the number of loot items to spawn (1-2 per house)
         private _lootToSpawn = [1, 2] call BIS_fnc_selectRandom;
 
         for "_i" from 1 to _lootToSpawn do {
@@ -33,26 +38,30 @@ diag_log format ["[Loot System] Found %1 positions in house %2.", count _buildin
             if (count _buildingPositions == 0) exitWith {};
 
             // Randomly select a position
-            private _lootPos = selectRandom _buildingPositions;
-            _buildingPositions = _buildingPositions - [_lootPos]; // Remove the position to avoid overlap
+            private _lootPosition = selectRandom _buildingPositions;
+            _buildingPositions = _buildingPositions - [_lootPosition]; // Remove the position to avoid overlap
 
             // Randomly select a loot item
             private _lootItem = (selectRandom _lootPool) select 0;
 
-            // Adjust loot position slightly above ground
-            private _adjustedLootPos = [
-                _lootPos select 0, 
-                _lootPos select 1, 
-                (_lootPos select 2) + 0.1
-            ];
-
             // Spawn the loot
-            private _loot = createVehicle [_lootItem, _adjustedLootPos, [], 0, "CAN_COLLIDE"];
-            _loot setVariable ["parentHouse", _house]; // Link loot to the house
+            private _loot = createVehicle [_lootItem, _lootPosition, [], 0, "CAN_COLLIDE"];
 
-            // Log for debugging
-            diag_log format ["[Loot Spawn] Spawned %1 at %2 in house %3", _lootItem, _adjustedLootPos, _house];
+            // Validate and adjust position if loot spawns underground
+            private _groundZ = getTerrainHeightASL [_lootPosition select 0, _lootPosition select 1];
+            private _lootZ = _lootPosition select 2;
+
+            if (_lootZ < _groundZ) then {
+                _lootPosition set [2, _groundZ + 0.1]; // Adjust to just above ground level
+                _loot setPos _lootPosition;
+            };
+
+            // Link loot to the house for cleanup later
+            private _currentLoot = _house getVariable ["currentLoot", []];
+            _house setVariable ["currentLoot", _currentLoot + [_loot]];
         };
+
+        diag_log format ["[Loot Spawn] Loot spawned in house %1.", _house];
     };
 };
 
