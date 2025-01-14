@@ -15,12 +15,32 @@ params [
     ["_maxTotalEnemies", 25],                      // Maximum total number of enemies allowed at the same time
     ["_spawnCheckInterval", 120],                  // Interval in seconds to recheck and spawn enemies if under the limit
     ["_cleanupDistance", 500],                     // Distance from player at which enemies are removed
-    ["_equipmentPool", [                           // Array of equipment loadouts
+["_equipmentPool", [                           // Array of equipment loadouts
         ["arifle_Katiba_F", ["30Rnd_65x39_caseless_green"]],
         ["arifle_MX_F", ["30Rnd_65x39_caseless_mag"]],
         ["arifle_AK12_F", ["30Rnd_762x39_Mag_F"]],
         ["SMG_02_F", ["30Rnd_9x21_Mag"]],
         ["arifle_SPAR_01_blk_F", ["30Rnd_556x45_Stanag"]]
+    ]],
+    ["_secondaryWeaponsPool", [                // Array of secondary weapon loadouts
+        ["hgun_ACPC2_F", ["9Rnd_45ACP_Mag"]],
+        ["hgun_Pistol_heavy_01_F", ["11Rnd_45ACP_Mag"]],
+        ["CUP_hgun_Makarov", ["CUP_8Rnd_9x18_Makarov_M"]],
+        ["CUP_hgun_Glock17", ["CUP_17Rnd_9x19_glock17"]]
+    ]],
+    ["_grenadePool", [                         // Array of grenade types
+        // Vanilla grenades
+        "HandGrenade",              // Explosive grenade
+        "MiniGrenade",              // Smaller explosive grenade
+        "SmokeShell",               // White smoke grenade
+        "SmokeShellRed",            // Red smoke grenade
+        "SmokeShellGreen",          // Green smoke grenade
+        "Chemlight_green"//,          // Green chemlight (throwable light source)
+
+        // CUP grenades (if applicable)
+        //"CUP_HandGrenade_RGD5",     // RGD-5 grenade
+        //"CUP_HandGrenade_M67",      // M67 grenade
+        //"CUP_HandGrenade_L109A1_HE" // L109A1 grenade
     ]],
     ["_uniformPool", [
         "U_O_CombatUniform_ocamo",
@@ -53,6 +73,7 @@ params [
     ["_medkits", ["FirstAidKit", "Medikit"]],      // Array of medical items
     ["_skillRange", [0.2, 0.8]]                    // Array [minSkill, maxSkill] for enemy skill level
 ];
+
 
 // Create global variables to track state
 private _processedBuildings = []; // Stores buildings with cooldowns
@@ -173,6 +194,20 @@ _enemy addMPEventHandler ["MPKilled", {
         if (!isNil "_equipment") then {
             _enemy addWeapon (_equipment select 0);
             {_enemy addMagazine _x} forEach (_equipment select 1);
+        };
+        
+        // Randomize secondary weapon loadout
+        private _secondary = selectRandom _secondaryWeaponsPool;
+        if (!isNil "_secondary") then {
+            _enemy addWeapon (_secondary select 0);
+            {_enemy addMagazine _x} forEach (_secondary select 1);
+        };
+        
+        // Assign grenades
+        private _grenadeCount = floor (random 3) + 1; // Randomize grenade count (1-3)
+        for "_i" from 1 to _grenadeCount do {
+        private _grenade = selectRandom _grenadePool;
+        _enemy addMagazine _grenade;
         };
 
         _enemy addItem selectRandom _medkits;
