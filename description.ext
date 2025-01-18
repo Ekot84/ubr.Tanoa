@@ -193,6 +193,51 @@ class RscTitles {
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Total Kills: 0";
             };
+            
+            class TopPlayer1 {
+                idc = 2010;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.30;
+                w = 0.3;
+                h = 0.02;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {1, 0.84, 0, 1}; // Gold for first place
+                colorBackground[] = {0, 0, 0, 0};
+                text = "1st: -";
+            };
+
+            class TopPlayer2 {
+                idc = 2011;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.34;
+                w = 0.3;
+                h = 0.02;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {0.75, 0.75, 0.75, 1}; // Silver for second place
+                colorBackground[] = {0, 0, 0, 0};
+                text = "2nd: -";
+            };
+
+            class TopPlayer3 {
+                idc = 2012;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.38;
+                w = 0.3;
+                h = 0.02;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {0.8, 0.5, 0.2, 1}; // Bronze for third place
+                colorBackground[] = {0, 0, 0, 0};
+                text = "3rd: -";
+            };
         };
     };
 };

@@ -1,25 +1,78 @@
 // Configuration Parameters
-_spawnChance = 0.5;                         // Probability (0-1) of spawning enemies
-_enemyCountRange = [1, 5];                  // Array [minEnemies, maxEnemies] to spawn per location
+_spawnChance = 0.3;                         // Probability (0-1) of spawning enemies
+_enemyCountRange = [1, 3];                  // Array [minEnemies, maxEnemies] to spawn per location
 _minDistance = 100;                          // Minimum spawn distance from player (meters)
-_maxDistance = 300;                          // Maximum spawn distance from player (meters)
-_maxTotalEnemies = 25;                       // Maximum total number of enemies allowed at the same time
+_maxDistance = 800;                          // Maximum spawn distance from player (meters)
+_maxTotalEnemies = 50;                       // Maximum total number of enemies allowed at the same time
 _spawnCheckInterval = 120;                   // Interval in seconds to recheck and spawn enemies if under the limit
-_cleanupDistance = 500;                      // Distance from player at which enemies are removed
-_skillRange = [0.2, 0.8];                   // Skill Range
-private _cooldownTime = 300;                // Cooldown time in seconds
-_useAutoLoadout = true;                   // While true Generate loadouts from all mods true CFGS
+_cleanupDistance = 800;                      // Distance from player at which enemies are removed
+_skillRange = [0.2, 0.5];                   // Skill Range
+private _cooldownTime = 800;                // Cooldown time in seconds
+_useAutoLoadout = false;                   // While true Generate loadouts from all mods true CFGS
 
 // Equipment Pools
+// Equipment Pools (Primary Weapons)
 _equipmentPool = [
-    ["arifle_Katiba_F", ["30Rnd_65x39_caseless_green"]],  // Katiba 6.5 mm
-    ["arifle_MX_F", ["30Rnd_65x39_caseless_mag"]]        // MX 6.5 mm
+    ["", []], // Empty slot for unarmed units
+
+    // 🔥 Standard Assault Rifles (Modern)
+    /*["arifle_Katiba_F", ["30Rnd_65x39_caseless_green"]],  // Katiba 6.5 mm
+    ["arifle_MX_F", ["30Rnd_65x39_caseless_mag"]],        // MX 6.5 mm
+    ["arifle_MX_khk_F", ["30Rnd_65x39_caseless_khaki_mag"]], // MX Khaki (Tanoa)
+    ["arifle_MX_SW_F", ["100Rnd_65x39_caseless_mag"]],    // MX SW LMG
+    ["arifle_AK12_F", ["30Rnd_762x39_Mag_F"]],  // AK-12 7.62mm*/
+
+    // 🎖️ Classic Battle Rifles (Cold War & Historic)
+    ["CUP_srifle_LeeEnfield", ["CUP_10x_303_M"]], // Lee-Enfield .303
+    //["CUP_arifle_FNFAL5060", ["CUP_20Rnd_762x51_FNFAL_M"]], // FN FAL
+    //["CUP_arifle_G3A3_ris", ["CUP_20Rnd_762x51_G3"]], // G3A3
+    ["CUP_srifle_Mosin_Nagant", ["CUP_5Rnd_762x54_Mosin"]], // Mosin-Nagant
+    //["CUP_srifle_SVD", ["CUP_10Rnd_762x54_SVD_M"]], // Dragunov SVD
+    //["rhs_weap_m38", ["rhs_5Rnd_762x54mmR"]], // Mosin M38 Carbine (RHS Mod)
+    ["rhs_weap_m1garand_sa43", ["rhsgref_8Rnd_762x63_M2B_M1rifle"]], // M1 Garand (RHS)
+    //["rhs_weap_kar98k", ["rhsgref_5Rnd_792x57_kar98k"]], // Kar98k (RHS)
+
+    // 🛠️ Shotguns
+    ["sgun_HunterShotgun_01_F", ["2Rnd_12Gauge_Pellets", "2Rnd_12Gauge_Slug"]],  // Hunter Shotgun (Contact DLC)
+    ["sgun_HunterShotgun_01_sawedoff_F", ["2Rnd_12Gauge_Pellets", "2Rnd_12Gauge_Slug"]], // Sawed-off Hunter (Contact DLC)
+    ["CUP_sgun_M1014", ["CUP_8Rnd_B_Beneli_74Slug", "CUP_8Rnd_B_Beneli_74Pellets"]],  // M1014 (CUP Mod)
+    ["CUP_sgun_SPAS12", ["CUP_8Rnd_B_Saiga12_74Pellets", "CUP_8Rnd_B_Saiga12_74Slug"]], // SPAS-12 (CUP Mod)
+    ["rhs_weap_M590_5RD", ["rhsusf_5Rnd_00Buck", "rhsusf_5Rnd_Slug"]] // Mossberg 590A1 (RHS Mod)
 ];
 
+// Secondary Weapons (Pistols & SMGs)
 _secondaryWeaponsPool = [
+    ["", []], // Empty slot for unarmed units
+
+    // 🔫 9mm Handguns
     ["hgun_Rook40_F", ["16Rnd_9x21_Mag"]],
-    ["hgun_ACPC2_F", ["9Rnd_45ACP_Mag"]]
+    ["hgun_P07_F", ["16Rnd_9x21_Mag"]],
+    ["hgun_P07_khk_F", ["16Rnd_9x21_Mag"]],
+    ["hgun_Pistol_01_F", ["10Rnd_9x21_Mag"]],  // PM 9mm
+
+    // .45 ACP Handguns
+    ["hgun_ACPC2_F", ["9Rnd_45ACP_Mag"]],
+    ["hgun_Pistol_heavy_01_F", ["11Rnd_45ACP_Mag"]],  // 4-five
+    ["hgun_Pistol_heavy_01_green_F", ["11Rnd_45ACP_Mag"]],
+
+    // 🔄 .357 Magnum Revolver
+    ["hgun_Pistol_heavy_02_F", ["6Rnd_45ACP_Cylinder"]],  // Zubr
+
+    // 🔥 9mm Subcompact Weapons
+    ["hgun_PDW2000_F", ["30Rnd_9x21_Mag"]],  // PDW-2000 (Compact SMG)
+
+    // 🏛️ Historic Handguns
+    ["rhs_weap_m1911", ["rhsusf_mag_7x45acp_MHP"]], // M1911 .45 ACP (RHS)
+    ["CUP_hgun_Colt1911", ["CUP_7Rnd_45ACP_1911"]], // Colt M1911 (CUP)
+    ["CUP_hgun_M9", ["CUP_15Rnd_9x19_M9"]], // Beretta M9 (CUP)
+    ["CUP_hgun_TT", ["CUP_8Rnd_762x25_TT"]], // Tokarev TT-33
+    ["rhs_weap_makarov_pmm", ["rhs_mag_9x18_12_57N181S"]], // Makarov PMM
+    ["rhs_weap_pb_6p9", ["rhs_mag_9x18_8_57N181S"]], // PB Suppressed Makarov
+    ["CUP_hgun_Duty", ["CUP_16Rnd_9x19_cz75"]], // CZ-75 Duty
+    ["rhs_weap_tt33", ["rhs_mag_762x25_8"]] // TT-33 Tokarev (RHS)
 ];
+
+
 
 _grenadePool = [
     "HandGrenade",              // M67 Fragmentation Grenade
@@ -61,7 +114,7 @@ _grenadePool = [
     "3Rnd_SmokeOrange_Grenade_shell", // 3x 40mm Smoke Grenades (Orange)
 
     // CUP Grenades
-    "CUP_HandGrenade_RGD5",     // RGD-5 Fragmentation Grenade
+    /*"CUP_HandGrenade_RGD5",     // RGD-5 Fragmentation Grenade
     "CUP_HandGrenade_M67",      // M67 Fragmentation Grenade
     "CUP_HandGrenade_L109A1_HE",// L109A1 High-Explosive Grenade
     "CUP_HandGrenade_DM51",     // DM51 Fragmentation Grenade
@@ -78,24 +131,25 @@ _grenadePool = [
     "CUP_HandGrenade_M18_Blue", // M18 Smoke Grenade (Blue)
     "CUP_HandGrenade_M18_Orange",// M18 Smoke Grenade (Orange)
     "CUP_HandGrenade_M14",      // M14 Incendiary Grenade
-    "CUP_HandGrenade_M34",       // M34 White Phosphorus Grenade
+    "CUP_HandGrenade_M34",       // M34 White Phosphorus Grenade */
     ""                          // No nade
 ];
 
 _uniformPool = [
-    "CUP_U_I_GUE_2",                // Green Jacket
-    "CUP_U_I_GUE_3",                // Grey Jacket
-    "CUP_U_I_GUE_4",                // Black Jacket
-    "CUP_U_I_GUE_5",                // Blue Jacket
-    "CUP_U_I_GUE_6",                // Red Jacket
-    "CUP_U_I_GUE_7",                // Yellow Jacket
-    "CUP_U_I_GUE_8",                // Purple Jacket
-    "CUP_U_I_GUE_9",                // Orange Jacket
-    "CUP_U_I_GUE_10"
+    "U_C_Mechanic_01_F",  
+    "U_C_Man_casual_6_sick_F",                // Black Jacket
+    "U_BG_Guerilla3_2",                // Red Jacket
+    "U_BG_Guerilla3_1",                // Yellow Jacket
+    "U_BG_Guerilla1_1",                // Purple Jacket
+    "U_C_Poor_1",                // Orange Jacket
+    "U_C_Uniform_Farmer_01_F",
+    "U_I_L_Uniform_01_tshirt_skull_F",
+    "U_IG_Guerilla3_2",
+    "U_IG_Guerilla3_1"
 ];
 
 _vestPool = [
-     "V_PlateCarrier1_rgr",        // Carrier Lite (Green)
+    /*"V_PlateCarrier1_rgr",        // Carrier Lite (Green)
     "V_PlateCarrier2_rgr",        // Carrier Rig (Green)
     "V_PlateCarrier3_rgr",        // Carrier GL Rig (Green)
     "V_PlateCarrierGL_rgr",       // Carrier GL Rig (Green)
@@ -151,7 +205,7 @@ _vestPool = [
     "V_RebreatherIA",             // Rebreather [AAF]
     "V_EOD_blue_F",               // EOD Vest (Blue)
     "V_EOD_coyote_F",             // EOD Vest (Coyote)
-    "V_EOD_IDAP_blue_F",          // EOD Vest (IDAP)
+    "V_EOD_IDAP_blue_F",*/          // EOD Vest (IDAP)
     "V_Press_F",                  // Press Vest
     "V_Rangemaster_belt",         // Rangemaster Belt
     "V_LegStrapBag_black_F",      // Leg Strap Bag (Black)
@@ -168,11 +222,24 @@ _vestPool = [
     "V_DeckCrew_white_F",         // Deck Crew Vest (White)
     "V_DeckCrew_brown_F",         // Deck Crew Vest (Brown)
     "V_DeckCrew_violet_F",        // Deck Crew Vest (Violet)
+    "V_Safety_yellow_F",          // Safety Vest (Yellow)
+    "V_Safety_orange_F",          // Safety Vest (Orange)
+    "V_Safety_blue_F",            // Safety Vest (Blue)
+    "V_DeckCrew_yellow_F",        // Deck Crew Vest (Yellow)
+    "V_DeckCrew_blue_F",          // Deck Crew Vest (Blue)
+    "V_DeckCrew_red_F",           // Deck Crew Vest (Red)
+    "V_DeckCrew_green_F",         // Deck Crew Vest (Green)
+    "V_DeckCrew_white_F",         // Deck Crew Vest (White)
+    "V_DeckCrew_brown_F",         // Deck Crew Vest (Brown)
+    "V_DeckCrew_violet_F",        // Deck Crew Vest (Violet)
+    "V_Safety_yellow_F",          // Safety Vest (Yellow)
+    "V_Safety_orange_F",          // Safety Vest (Orange)
+    "V_Safety_blue_F",            // Safety Vest (Blue)
     ""                            // No Vest   
 ];
 
 _bagPool = [
-    "B_AssaultPack_blk",           // Assault Pack (Black)
+    /*"B_AssaultPack_blk",           // Assault Pack (Black)
     "B_AssaultPack_cbr",           // Assault Pack (Coyote)
     "B_AssaultPack_dgtl",          // Assault Pack (Digital)
     "B_AssaultPack_eaf_F",         // Assault Pack (Geometric)
@@ -217,12 +284,12 @@ _bagPool = [
     "B_RadioBag_01_eaf_F",         // Radio Pack (Geometric)
     "B_RadioBag_01_ghex_F",        // Radio Pack (Green Hex)
     "B_RadioBag_01_mtp_F",         // Radio Pack (MTP)
-    "B_RadioBag_01_tropic_F",      // Radio Pack (Tropic)
     "B_TacticalPack_blk",          // Tactical Backpack (Black)
     "B_TacticalPack_mcamo",        // Tactical Backpack (MTP)
     "B_TacticalPack_ocamo",        // Tactical Backpack (Hex)
     "B_TacticalPack_oli",          // Tactical Backpack (Olive)
     "B_TacticalPack_rgr",          // Tactical Backpack (Green)
+    "B_RadioBag_01_tropic_F",      // Radio Pack (Tropic)
     "B_ViperHarness_blk_F",        // Viper Harness (Black)
     "B_ViperHarness_ghex_F",       // Viper Harness (Green Hex)
     "B_ViperHarness_hex_F",        // Viper Harness (Hex)
@@ -232,11 +299,11 @@ _bagPool = [
     "B_ViperLightHarness_ghex_F",  // Viper Light Harness (Green Hex)
     "B_ViperLightHarness_hex_F",   // Viper Light Harness (Hex)
     "B_ViperLightHarness_khk_F",   // Viper Light Harness (Khaki)
-    "B_ViperLightHarness_oli_F",   // Viper Light Harness (Olive)
+    "B_ViperLightHarness_oli_F",   // Viper Light Harness (Olive)*/
     ""                             // No Backpack    
 ];
 _headgearPool = [
-    "H_HelmetSpecB",               // Enhanced Combat Helmet
+   /* "H_HelmetSpecB",               // Enhanced Combat Helmet
     "H_HelmetB_light",             // Light Combat Helmet
     "H_Booniehat_khk",             // Booniehat (Khaki)
     "H_Bandanna_khk",              // Bandana (Khaki)
@@ -302,6 +369,17 @@ _headgearPool = [
     "H_Beret_grn_SF",              // Beret (SF)
     "H_Beret_ocamo",               // Beret [CSAT]
     "H_Beret_red",                 // Beret (Red)
+    "H_HelmetAggressor_F",         // Aggressor Helmet
+    "H_HelmetB_Enh_tna_F",         // Enhanced Combat Helmet (Tropic)
+    "H_HelmetCrew_O_ghex_F",       // Crew Helmet (Green Hex)
+    "H_HelmetHBK_chops_F",         // Heavy Helmet (Chops)
+    "H_HelmetHBK_F",               // Heavy Helmet
+    "H_HelmetHBK_headset_F",       // Heavy Helmet (Headset)
+    "H_HelmetHBK_chops_F",         // Heavy Helmet (Chops)
+    "H_HelmetO_ViperSP_hex_F",     // Viper Special Purpose Helmet (Hex)
+    "H_HelmetO_ViperSP_ghex_F",    // Viper Special Purpose Helmet (Green Hex)
+    "H_HelmetSpecO_ghex_F",        // Assassin Helmet (Green Hex)
+    "H_HelmetLeaderO_ghex_F",      // Defender Helmet (Green Hex)
     "H_Booniehat_dgtl",            // Booniehat [AAF]
     "H_Booniehat_dirty",           // Booniehat (Dirty)
     "H_Booniehat_eaf",             // Booniehat [LDF]
@@ -311,7 +389,7 @@ _headgearPool = [
     "H_Booniehat_mcamo",           // Booniehat (MTP)
     "H_Booniehat_ocamo",           // Booniehat (Hex)
     "H_Booniehat_tan",             // Booniehat (Tan)
-    "H_Booniehat_tna_F",           // Booniehat (Tropic)
+    "H_Booniehat_tna_F", */          // Booniehat (Tropic)
     "H_Cap_blk_CMMG",              // Cap (Black, CMMG)
     "H_Cap_blk_ION",               // Cap (Black, ION)
     "H_Cap_blk_Raven",             // Cap (Black, Raven)
@@ -342,17 +420,6 @@ _headgearPool = [
     "H_Watchcap_camo",             // Beanie (Camo)
     "H_Watchcap_khk",              // Beanie (Khaki)
     "H_Watchcap_sgg",              // Beanie (Sage)
-    "H_HelmetAggressor_F",         // Aggressor Helmet
-    "H_HelmetB_Enh_tna_F",         // Enhanced Combat Helmet (Tropic)
-    "H_HelmetCrew_O_ghex_F",       // Crew Helmet (Green Hex)
-    "H_HelmetHBK_chops_F",         // Heavy Helmet (Chops)
-    "H_HelmetHBK_F",               // Heavy Helmet
-    "H_HelmetHBK_headset_F",       // Heavy Helmet (Headset)
-    "H_HelmetHBK_chops_F",         // Heavy Helmet (Chops)
-    "H_HelmetO_ViperSP_hex_F",     // Viper Special Purpose Helmet (Hex)
-    "H_HelmetO_ViperSP_ghex_F",    // Viper Special Purpose Helmet (Green Hex)
-    "H_HelmetSpecO_ghex_F",        // Assassin Helmet (Green Hex)
-    "H_HelmetLeaderO_ghex_F",      // Defender Helmet (Green Hex)
     "H_MilCap_ghex_F",             // Military Cap (Green Hex)
     "H_Booniehat_ghex_F",          // Booniehat (Green Hex)
     "H_Cap_ghex_F",                // Cap (Green Hex)
@@ -379,6 +446,54 @@ _headgearPool = [
     "H_Construction_headset_vrana_F",  // Construction Helmet (Vrana, Headset)
     "H_Construction_headset_white_F",  // Construction Helmet (White, Headset)
     "H_Construction_headset_blue_F",    // Construction Helmet (Blue, Headset)
+    "H_Booniehat_khk",             // Booniehat (Khaki)
+    "H_Bandanna_khk",              // Bandana (Khaki)
+    "H_Cap_blk_CMMG",              // Cap (Black, CMMG)
+    "H_Cap_blk_ION",               // Cap (Black, ION)
+    "H_Cap_blk_Raven",             // Cap (Black, Raven)
+    "H_Cap_blu",                   // Cap (Blue)
+    "H_Cap_brn_SPECOPS",           // Cap (Brown, Specops)
+    "H_Cap_grn",                   // Cap (Green)
+    "H_Cap_headphones",            // Cap (Headphones)
+    "H_Cap_khaki_specops_UK",      // Cap (Khaki
+    "H_Cap_oli",                   // Cap (Olive)
+    "H_Cap_oli_hs",                // Cap (Olive, Headset)
+    "H_Cap_press",                 // Cap (Press)
+    "H_Cap_red",                   // Cap (Red)
+    "H_Cap_surfer",                // Cap (Surfer)
+    "H_Cap_tan",                   // Cap (Tan)
+    "H_Cap_tan_specops_US",        // Cap (Tan, SpecOps US)
+    "H_Cap_usblack",               // Cap (US Black)
+    "H_Hat_blue",                  // Hat (Blue)
+    "H_Hat_brown",                 // Hat (Brown)
+    "H_Hat_checker",               // Hat (Checker)
+    "H_Hat_camo",                  // Hat (Camo)
+    "H_Hat_grey",                  // Hat (Grey)
+    "H_Hat_tan",                   // Hat (Tan)
+    "H_StrawHat",                  // Straw Hat
+    "H_StrawHat_dark",             // Straw Hat (Dark)
+    "H_TurbanO_blk",               // Turban (Black)
+    "H_TurbanO_tan",               // Turban (Tan)
+    "H_Watchcap_blk",              // Beanie (Black)
+    "H_Watchcap_camo",             // Beanie (Camo)
+    "H_Watchcap_khk",              // Beanie (Khaki)
+    "H_Watchcap_sgg",              // Beanie (Sage)
+    "H_Helmet_Skate",              // Skate Helmet
+    "H_Bandanna_blu",              // Bandana (Blue)
+    "H_Bandanna_camo",             // Bandana (Woodland)
+    "H_Bandanna_cbr",              // Bandana (Coyote)
+    "H_Bandanna_gry",              // Bandana (Grey)
+    "H_Bandanna_khk_hs",           // Bandana (Headset)
+    "H_Bandanna_mcamo",            // Bandana (MTP)
+    "H_Bandanna_sand",             // Bandana (Sand)
+    "H_Bandanna_sgg",              // Bandana (Sage)
+    "H_Bandanna_surfer",           // Bandana (Surfer)
+    "H_Bandanna_surfer_blk",       // Bandana (Surfer, Black)
+    "H_Bandanna_surfer_grn",       // Bandana (Surfer, Green)
+    "H_BandMask_blk",              // Bandana Mask (Black)
+    "H_BandMask_demon",            // Bandana Mask (Demon)
+    "H_BandMask_khk",              // Bandana Mask (Khaki)
+    "H_BandMask_reaper",           // Bandana Mask (Reaper)
     ""    
 ];
 

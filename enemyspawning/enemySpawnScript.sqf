@@ -20,7 +20,7 @@ private _spawnEnemies = {
 
     // Check current enemy count
     if (count _activeEnemies >= _maxTotalEnemies) exitWith {
-        diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping %2 at %3.", _maxTotalEnemies, _type, getPos _location];
+        //diag_log format ["[AI Spawner] Maximum enemy limit (%1) reached. Skipping %2 at %3.", _maxTotalEnemies, _type, getPos _location];
     };
 
     // Skip if the location has already been processed
@@ -163,11 +163,11 @@ if (!isNull _unit && {isPlayer _unit}) then {
 _activeEnemies pushBack _enemy;
 
 // Define fallback Arma 3 stock gear
-private _fallbackUniform = "U_B_CombatUniform_mcam";
-private _fallbackVest = "V_PlateCarrier1_rgr";
-private _fallbackBackpack = "B_AssaultPack_mcamo";
-private _fallbackHeadgear = "H_HelmetB";
-private _fallbackPrimary = "arifle_MX_F";
+private _fallbackUniform = "";
+private _fallbackVest = "";
+private _fallbackBackpack = "";
+private _fallbackHeadgear = "";
+private _fallbackPrimary = "";
 private _fallbackSecondary = "hgun_P07_F";
 private _fallbackMagazines = ["30Rnd_65x39_caseless_mag"];
 private _fallbackGrenade = "HandGrenade";

@@ -1,5 +1,4 @@
-// Debug log
-diag_log "Starting HUD script...";
+// healthbartest.sqf (Now includes Top 3 Player Leaderboard & HUD Updates with Kill Counter and Health Bar Fixes)
 
 // **Wait for the player to initialize**
 waitUntil { !isNull player && { alive player } };
@@ -7,97 +6,119 @@ diag_log "Player initialized.";
 
 // **Display the HUD**
 cutRsc ["RscDisplayHUD", "PLAIN"];
+sleep 0.5; // Ensure UI loads before retrieving controls
 
-// **Get the display**
+// **Get the display and retry if necessary**
 private _display = uiNamespace getVariable ["RscDisplayHUD", displayNull];
+private _attempts = 0;
+while { isNull _display && _attempts < 5 } do {
+    diag_log "HUD: Retrying display retrieval...";
+    sleep 1;
+    _display = uiNamespace getVariable ["RscDisplayHUD", displayNull];
+    _attempts = _attempts + 1;
+};
+
 if (isNull _display) exitWith {
-    diag_log "Error: HUD display not found.";
+    diag_log "FATAL ERROR: HUD display could not be initialized. Aborting HUD script.";
 };
 
-// **Retrieve UI controls**
-private _healthBarFg = _display displayCtrl 1002;
-private _healthText = _display displayCtrl 1003;
-private _killCounter = _display displayCtrl 2000;
-private _softVehicleCounter = _display displayCtrl 2001;
-private _armorCounter = _display displayCtrl 2002;
-private _airCounter = _display displayCtrl 2003;
-private _deathCounter = _display displayCtrl 2004;
-private _totalScoreCtrl = _display displayCtrl 2005; // ✅ Renamed to avoid conflict
+// **Retrieve UI controls and ensure validity**
+private _uiElements = [
+    ["_healthBarFg", 1002],
+    ["_healthText", 1003],
+    ["_killCounter", 2000],
+    ["_softVehicleCounter", 2001],
+    ["_armorCounter", 2002],
+    ["_airCounter", 2003],
+    ["_deathCounter", 2004],
+    ["_totalScoreCtrl", 2005],
+    ["_top1", 2010],
+    ["_top2", 2011],
+    ["_top3", 2012]
+];
 
-// **Ensure UI elements exist**
-private _missingElements = [];
-if (isNull _killCounter) then { _missingElements pushBack "KillCounter (2000)"; };
-if (isNull _softVehicleCounter) then { _missingElements pushBack "SoftVehicleCounter (2001)"; };
-if (isNull _armorCounter) then { _missingElements pushBack "ArmorCounter (2002)"; };
-if (isNull _airCounter) then { _missingElements pushBack "AirCounter (2003)"; };
-if (isNull _deathCounter) then { _missingElements pushBack "DeathCounter (2004)"; };
-if (isNull _totalScoreCtrl) then { _missingElements pushBack "TotalScore (2005)"; };
-
-if (count _missingElements > 0) exitWith {
-    diag_log format ["HUD: ERROR - Missing UI elements: %1", _missingElements];
-};
-
-// **Initialize counters**
-private _kills = 0;
-private _deaths = 0;
-
-// **Start update loop**
-while {true} do {
-    // **Update Health Bar**
-    private _health = 1 - damage player;
-    private _width = 0.075 * safezoneW * _health; // Scale foreground width dynamically
-    //_healthBarFg ctrlSetPosition [0.03 * safezoneW + safezoneX, 0.8 * safezoneH + safezoneY, _width, 0.01 * safezoneH];
-    _healthBarFg ctrlCommit 0;
-    _healthText ctrlSetText format ["%1%%", round(_health * 100)];
-
-    // **Change health bar color based on health level**
-    if (_health < 0.3) then {
-        _healthBarFg ctrlSetBackgroundColor [1, 0, 0, 1]; // Red for low health
+private _uiMap = createHashMap;
+{
+    private _ctrl = _display displayCtrl (_x select 1);
+    if (!isNull _ctrl) then {
+        _uiMap set [_x select 0, _ctrl];
     } else {
-        _healthBarFg ctrlSetBackgroundColor [0, 0.6, 0, 1]; // Green otherwise
+        diag_log format ["HUD: ERROR - UI Element %1 (ID: %2) not found!", _x select 0, _x select 1];
     };
+} forEach _uiElements;
 
-    // **Update Kill & Death Counters using getPlayerScores**
-    private _scores = getPlayerScores player;
+// **Store UI Map in uiNamespace so it is accessible inside spawn**
+uiNamespace setVariable ["HUD_UI_Map", _uiMap];
 
-    if (count _scores >= 6) then {
-        private _killsInfantry = _scores select 0;
-        private _killsSoft = _scores select 1;
-        private _killsArmor = _scores select 2;
-        private _killsAir = _scores select 3;
-        private _deaths = _scores select 4;
-        private _totalScore = _scores select 5; // ✅ This is now just a number, NOT a control!
-
-        // **Update HUD UI**
-        _killCounter ctrlSetText format ["Infantry Kills: %1", _killsInfantry];
-        _softVehicleCounter ctrlSetText format ["Soft Kills: %1", _killsSoft];
-        _armorCounter ctrlSetText format ["Armor Kills: %1", _killsArmor];
-        _airCounter ctrlSetText format ["Air Kills: %1", _killsAir];
-        _deathCounter ctrlSetText format ["Deaths: %1", _deaths];
-        _totalScoreCtrl ctrlSetText format ["Total Kills: %1", _totalScore]; // ✅ Now using `_totalScoreCtrl`
-
-        // **Debug Log**
-        diag_log format ["HUD: Updated UI -> Infantry: %1 | Soft: %2 | Armor: %3 | Air: %4 | Deaths: %5 | Total: %6",
-            _killsInfantry, _killsSoft, _killsArmor, _killsAir, _deaths, _totalScore];
-    } else {
-        diag_log "HUD: ERROR - Score data unavailable!";
-    };
-
-    sleep 1; // **Refresh every second for better responsiveness**
+if (count _uiMap == 0) exitWith {
+    diag_log "FATAL ERROR: No valid UI elements found. Aborting HUD script.";
 };
 
-// **Event Handlers for Kills and Deaths**
-player addEventHandler ["Killed", {
-    _deaths = _deaths + 1;
-    _deathCounter ctrlSetText format ["Deaths: %1", _deaths];
-    diag_log format ["Player died. Deaths: %1", _deaths];
-}];
+// **Spawn Loop for Continuous Updates**
+[] spawn {
+    while {true} do {
+        private _uiMapLocal = uiNamespace getVariable ["HUD_UI_Map", createHashMap];
 
-addMissionEventHandler ["EntityKilled", {
-    params ["_killed", "_killer"];
-    if (_killer == player) then {
-        _kills = _kills + 1;
-        _killCounter ctrlSetText format ["Kills: %1", _kills];
-        diag_log format ["Player killed an enemy. Kills: %1", _kills];
+        // Ensure UI map exists
+        if (count _uiMapLocal == 0) then {
+            diag_log "HUD: ERROR - UI Map is still empty. Skipping update.";
+            sleep 1;
+            continue;
+        };
+
+        // **Update Health Bar**
+        private _health = 1 - damage player;
+        if (!isNull (_uiMapLocal get "_healthText")) then {
+            (_uiMapLocal get "_healthText") ctrlSetText format ["%1%%", round(_health * 100)];
+        };
+        if (!isNull (_uiMapLocal get "_healthBarFg")) then {
+            if (_health < 0.3) then {
+                (_uiMapLocal get "_healthBarFg") ctrlSetBackgroundColor [1, 0, 0, 1];
+            } else {
+                (_uiMapLocal get "_healthBarFg") ctrlSetBackgroundColor [0, 0.6, 0, 1];
+            };
+        };
+
+        // **Update Kill & Death Counters using getPlayerScores**
+        private _scores = getPlayerScores player;
+        if (count _scores >= 6) then {
+            (_uiMapLocal get "_killCounter") ctrlSetText format ["Infantry Kills: %1", _scores select 0];
+            (_uiMapLocal get "_softVehicleCounter") ctrlSetText format ["Soft Kills: %1", _scores select 1];
+            (_uiMapLocal get "_armorCounter") ctrlSetText format ["Armor Kills: %1", _scores select 2];
+            (_uiMapLocal get "_airCounter") ctrlSetText format ["Air Kills: %1", _scores select 3];
+            (_uiMapLocal get "_deathCounter") ctrlSetText format ["Deaths: %1", _scores select 4];
+            (_uiMapLocal get "_totalScoreCtrl") ctrlSetText format ["Total Kills: %1", _scores select 5];
+        } else {
+            diag_log "HUD: ERROR - Score data unavailable!";
+        };
+
+        // **Update Top 3 Player Leaderboard**
+        private _players = allPlayers select {isPlayer _x};
+        private _scoresList = [];
+
+        {
+            private _scoreData = getPlayerScores _x;
+            if (count _scoreData >= 6) then {
+                private _totalScore = _scoreData select 5;
+                _scoresList pushBack [_x, _totalScore];
+            };
+        } forEach _players;
+
+        _scoresList sort false;
+
+        private _top1 = "1st: -";
+        private _top2 = "2nd: -";
+        private _top3 = "3rd: -";
+
+        if (count _scoresList > 0) then { _top1 = format ["1st: %1 - %2", name (_scoresList select 0 select 0), _scoresList select 0 select 1]; };
+        if (count _scoresList > 1) then { _top2 = format ["2nd: %1 - %2", name (_scoresList select 1 select 0), _scoresList select 1 select 1]; };
+        if (count _scoresList > 2) then { _top3 = format ["3rd: %1 - %2", name (_scoresList select 2 select 0), _scoresList select 2 select 1]; };
+
+        (_uiMapLocal get "_top1") ctrlSetText _top1;
+        (_uiMapLocal get "_top2") ctrlSetText _top2;
+        (_uiMapLocal get "_top3") ctrlSetText _top3;
+
+        //diag_log format ["Updated Leaderboard: %1 | %2 | %3", _top1, _top2, _top3];
+        sleep 1;
     };
-}];
+};
