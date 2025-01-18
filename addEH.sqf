@@ -16,22 +16,23 @@ if (isServer) then {
             if (!isPlayer _killer) exitWith {}; // Only count player kills
 
             // **Prevent AI from being processed multiple times**
-            if (_unit getVariable ["KillProcessed", false]) exitWith {};  
+            if (_unit getVariable ["KillProcessed", false]) exitWith {};
             _unit setVariable ["KillProcessed", true, true];
 
             private _scoreUpdate = [0, 0, 0, 0, 0];
 
+            // **Unit Type Tracking (Currently Scores Set to 0)**
             if (_unit isKindOf "Man") then {
-                _scoreUpdate set [0, 1];  // Infantry Kill
+                _scoreUpdate set [0, 0];  // Infantry Kill
             } else {
                 if (_unit isKindOf "Car" || _unit isKindOf "Motorcycle") then {
-                    _scoreUpdate set [1, 1];  // Soft Vehicle Kill
+                    _scoreUpdate set [1, 0];  // Soft Vehicle Kill
                 } else {
                     if (_unit isKindOf "Tank" || _unit isKindOf "APC") then {
-                        _scoreUpdate set [2, 1];  // Armor Kill
+                        _scoreUpdate set [2, 0];  // Armor Kill
                     } else {
                         if (_unit isKindOf "Air") then {
-                            _scoreUpdate set [3, 1];  // Air Kill
+                            _scoreUpdate set [3, 0];  // Air Kill
                         };
                     };
                 };
@@ -39,15 +40,10 @@ if (isServer) then {
 
             // **Apply Score Update (Execute Only on Server)**
             [_killer, _scoreUpdate] remoteExec ["addPlayerScores", 0];
-
-            // **Debugging Logs**
-            diag_log format ["[AI Kill Log] %1 killed AI %2 -> Score Update: %3", name _killer, name _unit, _scoreUpdate];
-            diag_log format ["[DEBUG] MPKilled Triggered for %1 by %2 - Time: %3", name _unit, name _killer, time];
-            diag_log format ["[DEBUG] AI %1 was killed - Group: %2 | Units in Group: %3", name _unit, group _unit, units group _unit];
         }];
     }];
 
-    // **Define Global Function for Player Kill Handler**
+    // **Define Global Function for Player Death Handler**
     missionNamespace setVariable ["addPlayerHandler", {
         params ["_player"];
 
@@ -61,14 +57,14 @@ if (isServer) then {
             if (isNull _unit) exitWith {};
 
             // **Prevent Death Processing Multiple Times**
-            if (_unit getVariable ["DeathProcessed", false]) exitWith {};  
+            if (_unit getVariable ["DeathProcessed", false]) exitWith {};
             _unit setVariable ["DeathProcessed", true, true];
 
             // **Handle Deaths (Only for Players)**
             [_unit, [0, 0, 0, 0, 1]] remoteExec ["addPlayerScores", 0];
 
             // **Debugging Logs**
-            diag_log format ["[Player Death Log] Player %1 died. Death added.", name _unit];
+            diag_log format ["[Player Death Log] %1 died. Death added.", name _unit];
         }];
     }];
 
@@ -112,25 +108,4 @@ if (isServer) then {
             diag_log format ["[DEBUG] Player Joined, Event Handler Assigned: %1", name _player];
         };
     }];
-
-    // **Optimized Periodic Check for Missing Event Handlers**
-    [] spawn {
-        while {true} do {
-            {
-                if (!isPlayer _x && {!(_x getVariable ["MPKilledHandlerSet", false])}) then {
-                    [_x] call (missionNamespace getVariable "addKillHandler");
-                    diag_log format ["[DEBUG] AI %1 was missing MPKilled event, assigned.", name _x];
-                };
-            } forEach (allUnits select {!(_x getVariable ["MPKilledHandlerSet", false])});
-
-            {
-                if (isPlayer _x && {!(_x getVariable ["MPKilledHandlerSet", false])}) then {
-                    [_x] call (missionNamespace getVariable "addPlayerHandler");
-                    diag_log format ["[DEBUG] Player %1 was missing MPKilled event, assigned.", name _x];
-                };
-            } forEach (allPlayers select {!(_x getVariable ["MPKilledHandlerSet", false])});
-
-            sleep 30; // Check every 30 seconds
-        };
-    };
 };

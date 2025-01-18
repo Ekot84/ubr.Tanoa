@@ -2,7 +2,7 @@
 //[] execVM "healthBar.sqf"; // Add the health bar
 [] execVM "arcadeHealth.sqf"; // Optional: Arcade health system
 [] execVM "healthbartest.sqf";
-[] execVM "kill_death_counter.sqf";
+//[] execVM "kill_death_counter.sqf";
 //[] execVM "killTicker.sqf";
 [] execVM "staminaRegen.sqf";
 [] execVM "debugHint.sqf";
@@ -14,7 +14,7 @@
 
 //[] execVM "enemySpawnScript.sqf"; // Old enemySpawnScript
 [] execVM "globalCleanup.sqf";
-[] execVM "leaderboard.sqf";  // Runs the leaderboard script
+//[] execVM "leaderboard.sqf";  // Runs the leaderboard script
 
 
 // Loot Manager

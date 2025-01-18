@@ -26,7 +26,7 @@ class RscTitles {
         onLoad = "uiNamespace setVariable ['RscDisplayHUD', _this select 0];";
 
         class Controls {
-            // Background Box (Expanded to fit everything)
+            // Background Box (Expanded to fit Leaderboard)
             class HUDBackground {
                 idc = 3000;
                 type = 0;
@@ -34,7 +34,7 @@ class RscTitles {
                 x = safeZoneX + 0.03;
                 y = safeZoneY + (safeZoneH / 3);
                 w = 0.25;
-                h = 0.5;
+                h = 0.3;
                 colorBackground[] = {0, 0, 0, 0.7};
                 colorText[] = {0, 0, 0, 0};
                 text = "";
@@ -42,7 +42,7 @@ class RscTitles {
                 sizeEx = 0;
             };
 
-            // **🔹 Health UI Elements (Fully Restored) 🔹**
+            // Health Label
             class HealthLabel {
                 idc = 1000;
                 type = 0;
@@ -78,7 +78,7 @@ class RscTitles {
                 type = 0;
                 style = 128;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) - 0.02;
+                y = safeZoneY + (safeZoneH / 3) + 0.03;
                 w = 0.15;
                 h = 0.015;
                 colorBackground[] = {0, 0.6, 0, 1};
@@ -93,7 +93,7 @@ class RscTitles {
                 type = 0;
                 style = 2;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) - 0.015;
+                y = safeZoneY + (safeZoneH / 3) + 0.03;
                 w = 0.15;
                 h = 0.015;
                 colorText[] = {1, 1, 1, 1};
@@ -103,95 +103,61 @@ class RscTitles {
                 sizeEx = 0.02;
             };
 
-            // **🔹 Kill/Death Tracking UI (Newly Added) 🔹**
-            class KillCounter {
+            // Kill Counter
+            class KillCounterLabel {
                 idc = 2000;
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.06;
+                y = safeZoneY + (safeZoneH / 3) + 0.05;
                 w = 0.2;
-                h = 0.03;
-                font = "PuristaMedium";
-                sizeEx = 0.03;
+                h = 0.02;
                 colorText[] = {1, 1, 1, 1};
                 colorBackground[] = {0, 0, 0, 0};
-                text = "Infantry Kills: 0";
+                text = "Kills: 0";
+                font = "PuristaMedium";
+                sizeEx = 0.03;
             };
 
-            class SoftVehicleCounter {
+            // Death Counter
+            class DeathCounterLabel {
                 idc = 2001;
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.07;
                 w = 0.2;
-                h = 0.03;
-                font = "PuristaMedium";
-                sizeEx = 0.03;
+                h = 0.02;
                 colorText[] = {1, 1, 1, 1};
-                y = safeZoneY + (safeZoneH / 3) + 0.08;
-                colorBackground[] = {0, 0, 0, 0};
-                text = "Soft Kills: 0";
-            };
-
-            class ArmorCounter {
-                idc = 2002;
-                type = 0;
-                style = 0;
-                y = safeZoneY + (safeZoneH / 3) + 0.10;
-                x = safeZoneX + 0.04;
-                w = 0.2;
-                h = 0.03;
-                font = "PuristaMedium";
-                sizeEx = 0.03;
-                colorText[] = {1, 1, 1, 1};                
-                colorBackground[] = {0, 0, 0, 0};
-                text = "Armor Kills: 0";
-            };
-
-            class AirCounter {
-                idc = 2003;
-                type = 0;
-                style = 0;
-                y = safeZoneY + (safeZoneH / 3) + 0.12;
-                x = safeZoneX + 0.04;
-                w = 0.2;
-                h = 0.03;
-                font = "PuristaMedium";
-                sizeEx = 0.03;
-                colorText[] = {1, 1, 1, 1};                
-                colorBackground[] = {0, 0, 0, 0};
-                text = "Air Kills: 0";
-            };
-
-            class DeathCounter {
-                idc = 2004;
-                type = 0;
-                style = 0;
-                x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.14;
-                w = 0.2;
-                h = 0.03;
-                font = "PuristaMedium";
-                sizeEx = 0.03;
-                colorText[] = {1, 0, 0, 1};  // Red for deaths
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Deaths: 0";
-            };
-
-            class TotalScoreCounter {
-                idc = 2005;
-                type = 0;
-                style = 0;
-                x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.16;
-                w = 0.2;
-                h = 0.03;
                 font = "PuristaMedium";
                 sizeEx = 0.03;
-                colorText[] = {1, 1, 0, 1};  // Yellow for total kills
+            };
+
+            // 🏆 Leaderboard UI (Inside Health Bar HUD)
+            class LeaderboardText {
+                idc = 1004;
+                type = 13;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.10;
+                w = 0.35;
+                h = 0.6;
+                size = 0.03;
+                text = "";
+                colorText[] = {1,1,1,1};
                 colorBackground[] = {0, 0, 0, 0};
-                text = "Total Kills: 0";
+                font = "PuristaMedium";
+                shadow = 2;
+
+                class Attributes {
+                    font = "PuristaMedium";
+                    color = "#FFD700";
+                    align = "left";
+                    valign = "top";
+                    shadow = true;
+                };
             };
         };
     };
