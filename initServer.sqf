@@ -1,4 +1,5 @@
 [] execVM "spawnServerObjects.sqf";
+[] execVM "addEH.sqf";
 
 if (isServer) then {
     addMissionEventHandler ["PlayerConnected", {
@@ -11,3 +12,5 @@ if (isServer) then {
         };
     }];
 };
+
+

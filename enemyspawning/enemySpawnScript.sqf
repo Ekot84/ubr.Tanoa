@@ -91,7 +91,7 @@ private _spawnEnemies = {
 
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", _enemyName, _spawnPos];
 
-if (isServer) then {
+/*if (isServer) then {
     _enemy addMPEventHandler ["MPKilled", {
         params ["_unit", "_killer", "_instigator", "_useEffects"];
 
@@ -157,6 +157,7 @@ if (!isNull _unit && {isPlayer _unit}) then {
         };
     }];
 };
+*/
 
 
 _activeEnemies pushBack _enemy;

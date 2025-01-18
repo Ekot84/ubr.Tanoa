@@ -40,13 +40,13 @@ if (isNull _display) then {
             private _deaths = 0;
             private _score = 0;
 
-            if (count _scoreData == 3) then {
+            if (count _scoreData == 5) then {
                 _kills = _scoreData select 0;
                 _deaths = _scoreData select 1;
-                _score = _scoreData select 2;
+                _score = _scoreData select 4;
             };
 
-            diag_log format ["LDRBRD: %1 - Kills: %2, Deaths: %3, Score: %4", name _x, _kills, _deaths, _score];
+            //diag_log format ["LDRBRD: %1 - Kills: %2, Deaths: %3, Score: %4", name _x, _kills, _deaths, _score];
 
             _scores pushBack [_x, _kills, _deaths, _score];
 
@@ -57,7 +57,7 @@ if (isNull _display) then {
                 _x addWeapon "hgun_P07_F";
                 _x setVariable ["RewardedKills", _kills, true];
 
-                diag_log format ["LDRBRD: %1 received reward for 10+ kills", name _x];
+                //diag_log format ["LDRBRD: %1 received reward for 10+ kills", name _x];
             };
         } forEach _players;
 
@@ -83,12 +83,12 @@ if (isNull _display) then {
                 _leaderboardCtrl ctrlSetStructuredText parseText _leaderboard;
                 _leaderboardCtrl ctrlSetPosition [safeZoneX + 0.05, safeZoneY + (safeZoneH / 2), 0.3, 0.6];
                 _leaderboardCtrl ctrlCommit 0;
-                diag_log "LDRBRD: Leaderboard UI updated successfully!";
+                //diag_log "LDRBRD: Leaderboard UI updated successfully!";
             } else {
-                diag_log "LDRBRD: ERROR - LeaderboardText control not found!";
+                //diag_log "LDRBRD: ERROR - LeaderboardText control not found!";
             };
         } else {
-            diag_log "LDRBRD: ERROR - HUD display not found!";
+            //diag_log "LDRBRD: ERROR - HUD display not found!";
         };
 
         sleep 10;

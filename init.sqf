@@ -53,3 +53,26 @@ diag_log "Initializing EntityKilled Debugging...";
 }];
 */
 
+// Add an action to the player
+// Ensure the variable is initialized
+if (isNil "godModeActive") then { godModeActive = false; };
+
+// Add an action to the player
+godModeAction = player addAction ["Toggle God Mode", {
+    params ["_target", "_caller", "_actionId", "_arguments"];
+    
+    // Ensure the variable is properly defined
+    if (isNil "godModeActive") then { godModeActive = false; };
+
+    // Toggle God Mode
+    if (godModeActive) then {
+        _caller allowDamage true;
+        godModeActive = false;
+        hint "God Mode Disabled";
+    } else {
+        _caller allowDamage false;
+        godModeActive = true;
+        hint "God Mode Enabled";
+    };
+}];
+
