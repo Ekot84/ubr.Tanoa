@@ -7,9 +7,11 @@
 [] execVM "staminaRegen.sqf";
 [] execVM "enemySpawnScript.sqf";
 [] execVM "globalCleanup.sqf";
-[] execVM "lootFunctions.sqf";
-[] execVM "lootManager.sqf";
-[] execVM "nearestBuildingHint.sqf";
+[] execVM "leaderboard.sqf";  // Runs the leaderboard script
+
+
+// Loot Manager
+[] execVM "SCCLoot\lootInit.sqf";
 
 
 diag_log "Initializing EntityKilled Debugging...";

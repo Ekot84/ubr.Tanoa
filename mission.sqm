@@ -8,14 +8,14 @@ class EditorData
 	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=17;
+		nextID=19;
 	};
 	class Camera
 	{
-		pos[]={11641.9,10.595235,2985.9683};
-		dir[]={-0.65830493,-0.70954978,-0.25141099};
-		up[]={-0.66293317,0.70456916,-0.25317824};
-		aside[]={-0.35677913,-9.4401184e-07,0.93420565};
+		pos[]={11632.827,20.038872,2993.9131};
+		dir[]={-0.14930743,-0.96323389,-0.22336948};
+		up[]={-0.53529572,0.26859224,-0.80082262};
+		aside[]={-0.83137447,2.7299393e-08,0.55571759};
 	};
 };
 binarizationWanted=0;
@@ -23,13 +23,15 @@ sourceName="ubr";
 addons[]=
 {
 	"A3_Characters_F",
-	"A3_Characters_F_Mark"
+	"A3_Characters_F_Mark",
+	"hz_enemy_tagging",
+	"killfeed"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=2;
+		items=4;
 		class Item0
 		{
 			className="A3_Characters_F";
@@ -43,6 +45,16 @@ class AddonsMetaData
 			name="Arma 3 Marksmen - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
+		};
+		class Item2
+		{
+			className="HZ_enemy_tagging";
+			name="hz_enemy_tagging";
+		};
+		class Item3
+		{
+			className="killfeed";
+			name="killfeed";
 		};
 	};
 };
@@ -79,7 +91,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=1;
+		items=3;
 		class Item0
 		{
 			dataType="Group";
@@ -245,7 +257,7 @@ class Mission
 					};
 					id=12;
 					type="B_HeavyGunner_F";
-					atlOffset=-4.7683716e-07;
+					atlOffset=-9.5367432e-07;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -338,6 +350,7 @@ class Mission
 					};
 					id=14;
 					type="B_medic_F";
+					atlOffset=-4.7683716e-07;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -384,6 +397,7 @@ class Mission
 					};
 					id=15;
 					type="B_Soldier_A_F";
+					atlOffset=-4.7683716e-07;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -469,6 +483,413 @@ class Mission
 			};
 			id=8;
 			atlOffset=4.7683716e-07;
+		};
+		class Item1
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={11624.4,4.4110599,2994.095};
+			};
+			id=17;
+			type="HZ_ETS_Module3dIcons";
+			atlOffset=-4.7683716e-07;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="HZ_ETS_Module3dIcons_delay";
+					expression="_this setVariable ['delay',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="1";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="HZ_ETS_Module3dIcons_sip";
+					expression="_this setVariable ['sip',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="HZ_ETS_Module3dIcons_atag";
+					expression="_this setVariable ['atag',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="HZ_ETS_Module3dIcons_showgroup";
+					expression="_this setVariable ['showgroup',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="HZ_ETS_Module3dIcons_sbc";
+					expression="_this setVariable ['sbc',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="HZ_ETS_Module3dIcons_scalemod";
+					expression="_this setVariable ['scalemod',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="1";
+						};
+					};
+				};
+				class Attribute6
+				{
+					property="HZ_ETS_Module3dIcons_rop";
+					expression="_this setVariable ['rop',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
+						};
+					};
+				};
+				class Attribute7
+				{
+					property="HZ_ETS_Module3dIcons_psound";
+					expression="_this setVariable ['psound',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
+						};
+					};
+				};
+				class Attribute8
+				{
+					property="HZ_ETS_Module3dIcons_debug";
+					expression="_this setVariable ['debug',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
+						};
+					};
+				};
+				class Attribute9
+				{
+					property="HZ_ETS_Module3dIcons_duration";
+					expression="_this setVariable ['duration',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="60";
+						};
+					};
+				};
+				class Attribute10
+				{
+					property="HZ_ETS_Module3dIcons_sie";
+					expression="_this setVariable ['sie',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
+						};
+					};
+				};
+				class Attribute11
+				{
+					property="HZ_ETS_Module3dIcons_sif";
+					expression="_this setVariable ['sif',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
+						};
+					};
+				};
+				nAttributes=12;
+			};
+		};
+		class Item2
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={11623.81,4.4093943,2994.6531};
+			};
+			id=18;
+			type="moduleKillfeed";
+			atlOffset=-4.7683716e-07;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="moduleKillfeed_killfeedCooldown";
+					expression="_this setVariable ['killfeedCooldown',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=30;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="moduleKillfeed_killfeedEnabled";
+					expression="_this setVariable ['killfeedEnabled',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="moduleKillfeed_killfeedInversed";
+					expression="_this setVariable ['killfeedInversed',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=0;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="moduleKillfeed_midFeedYouColorYellow";
+					expression="_this setVariable ['midFeedYouColorYellow',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="moduleKillfeed_midfeedCooldown";
+					expression="_this setVariable ['midfeedCooldown',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=10;
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="moduleKillfeed_picturesHeadIcon";
+					expression="_this setVariable ['picturesHeadIcon',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute6
+				{
+					property="moduleKillfeed_picturesBulletIcon";
+					expression="_this setVariable ['picturesBulletIcon',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute7
+				{
+					property="moduleKillfeed_assists";
+					expression="_this setVariable ['assists',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute8
+				{
+					property="moduleKillfeed_midfeedMaximumLength";
+					expression="_this setVariable ['midfeedMaximumLength',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=10;
+						};
+					};
+				};
+				class Attribute9
+				{
+					property="moduleKillfeed_deathCausesInversed";
+					expression="_this setVariable ['deathCausesInversed',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=0;
+						};
+					};
+				};
+				class Attribute10
+				{
+					property="moduleKillfeed_killInfoDuration";
+					expression="_this setVariable ['killInfoDuration',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=20;
+						};
+					};
+				};
+				class Attribute11
+				{
+					property="moduleKillfeed_multipleDeathCauses";
+					expression="_this setVariable ['multipleDeathCauses',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=0;
+						};
+					};
+				};
+				class Attribute12
+				{
+					property="moduleKillfeed_killfeedMaximumLength";
+					expression="_this setVariable ['killfeedMaximumLength',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=10;
+						};
+					};
+				};
+				class Attribute13
+				{
+					property="moduleKillfeed_showFriendlyFire";
+					expression="_this setVariable ['showFriendlyFire',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute14
+				{
+					property="moduleKillfeed_midFeedAssists";
+					expression="_this setVariable ['midFeedAssists',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute15
+				{
+					property="moduleKillfeed_midFeedEnabled";
+					expression="_this setVariable ['midFeedEnabled',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				class Attribute16
+				{
+					property="moduleKillfeed_deathFeedEnabled";
+					expression="_this setVariable ['deathFeedEnabled',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="SCALAR";
+							value=1;
+						};
+					};
+				};
+				nAttributes=17;
+			};
 		};
 	};
 };

@@ -1,0 +1,75 @@
+----------------
+0.6 (Unstable)
+----------------
+Features:
+- New "Battle Royale" style loot spawning mode. Loot spawns once at the start of the mission, can be reset through code.
+
+Changes:
+- Complete code rewrite, which should result in increased performance.
+  - All loot spawning functions are only run when needed.
+  - Functions are now compiled on mission start.
+- Removed some custom positions to keep loot spots roughly proportional to building size.
+
+Fixes:
+- Loot no longer spawns inside the floor of custom buildings due to incorrect height format conversion.
+- Fixed blacklisted buildings sometimes spawning loot.
+- Fixed rare crash during building loot spawn.
+
+----------------
+0.5 (2021-04-11)
+----------------
+Features:
+- Added capability for cross-module interaction.
+- Loot spawn and loot cleanup can now have different delays.
+
+Changes:
+- Combined building-related config files.
+- Loot spawn now waits for cleanup script to finish before running, and vice versa.
+
+Fixes:
+- Wait time now correctly uses the value set in the config file.
+- Backpacks can be spawned as loot.
+
+----------------
+0.4 (2020-06-03)
+----------------
+Features:
+- Random loot spawning can be applied to pre-placed crates and boxes.
+
+Changes:
+- Debug messages now include info about pre-placed containers.
+- Improvements to functions in SCCLoot\Extras.
+
+Fixes:
+- All loot out of player range is now deleted in a single cleanup pass.
+
+----------------
+0.3 (2020-05-06)
+----------------
+Features:
+- Added CUP European Structures.
+- Added CUP Misc Structures.
+- Added CUP Middle Eastern Structures.
+
+Changes:
+- Config file building classes are no longer case-sensitive.
+
+Fixes:
+- Fixed most issues with loot clipping into the floor.
+
+----------------
+0.2 (2020-05-02)
+----------------
+Features:
+- Added Apex structures.
+- Added Malden structures.
+- Added Livonia structures.
+
+Changes:
+- Reduced default spawn range value.
+
+----------------
+0.1 (2020-05-01)
+----------------
+Changes:
+- Initial release.
