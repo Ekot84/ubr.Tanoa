@@ -17,7 +17,7 @@
 
 [] execVM "supplyCrate.sqf";
 // Loot Manager
-[] execVM "SCCLoot\lootInit.sqf";
+//[] execVM "SCCLoot\lootInit.sqf";
 
 
 diag_log "Initializing EntityKilled Debugging...";
