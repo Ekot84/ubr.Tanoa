@@ -3,9 +3,16 @@
 [] execVM "arcadeHealth.sqf"; // Optional: Arcade health system
 [] execVM "healthbartest.sqf";
 [] execVM "kill_death_counter.sqf";
-[] execVM "killTicker.sqf";
+//[] execVM "killTicker.sqf";
 [] execVM "staminaRegen.sqf";
-[] execVM "enemySpawnScript.sqf";
+[] execVM "debugHint.sqf";
+
+// Sep. EnemySpawnscript
+[] spawn {
+    execVM "enemyspawning\enemySpawnScript.sqf";
+};
+
+//[] execVM "enemySpawnScript.sqf"; // Old enemySpawnScript
 [] execVM "globalCleanup.sqf";
 [] execVM "leaderboard.sqf";  // Runs the leaderboard script
 
@@ -28,20 +35,21 @@ diag_log "Initializing EntityKilled Debugging...";
     private _killerName = if (isNil "_killer") then {"Unknown"} else {name _killer};
     hint format ["%1 killed %2", _killerName, _killedName];
 }] call CBA_fnc_addEventHandler;*/
-        // Add MP event handler to track kills
-        player addMPEventHandler ["MPKilled", {
-        params ["_unit", "_killer", "_instigator", "_useEffects"];
+// Add eventhandler for player
+/*player addMPEventHandler ["MPKilled", {
+    params ["_unit", "_killer", "_instigator", "_useEffects"];
 
-        if (isNull _unit) exitWith { diag_log "[AI Spawner] Kill event handler triggered with null unit."; };
-        if (isNull _killer) then { diag_log "[AI Spawner] Killer is null, likely an environmental death."; };
+    if (isNull _unit) exitWith { diag_log "[INIT_EH] Kill event handler triggered with null unit."; };
+    if (isNull _killer) then { diag_log "[INIT_EH] Killer is null, likely an environmental death."; };
 
-        // Get sides and names
-        private _sideDeadUnit = side group _unit;
-        private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
-        private _deadUnitName = name _unit; // Directly fetch the name set by setName
-        private _killerName = if (isNull _killer) then {"Environment"} else {name _killer};
+    // Get sides and names
+    private _sideDeadUnit = side group _unit;
+    private _sideKiller = if (isNull _killer) then {"Unknown"} else {side group _killer};
+    private _deadUnitName = name _unit; // Directly fetch the name set by setName
+    private _killerName = if (isNull _killer) then {"Environment"} else {name _killer};
 
-        // Log kill event
-        diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
-    }];
+    // Log kill event
+    diag_log format ["[INIT_EH] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+}];
+*/
 

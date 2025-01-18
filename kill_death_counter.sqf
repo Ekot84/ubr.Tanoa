@@ -23,7 +23,7 @@ private _kills = 0;
 private _deaths = 0;
 
 // Monitor events
-player addEventHandler ["Killed", {
+/*player addEventHandler ["Killed", {
     _deaths = _deaths + 1;
     _deathCounter ctrlSetText format ["Deaths: %1", _deaths];
     diag_log format ["Player died. Deaths: %1", _deaths];
@@ -36,7 +36,7 @@ addMissionEventHandler ["EntityKilled", {
         _killCounter ctrlSetText format ["Kills: %1", _kills];
         diag_log format ["Player killed an enemy. Kills: %1", _kills];
     };
-}];
+}];*/
 
 // Debug log to verify script running
 diag_log "Kill/Death Counter script running.";

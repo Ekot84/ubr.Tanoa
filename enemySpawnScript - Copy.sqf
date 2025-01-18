@@ -686,116 +686,33 @@ private _spawnEnemies = {
         };
     }];
 
-_activeEnemies pushBack _enemy;
+        _activeEnemies pushBack _enemy;
 
-// Define fallback Arma 3 stock gear
-private _fallbackUniform = "U_B_CombatUniform_mcam";
-private _fallbackVest = "V_PlateCarrier1_rgr";
-private _fallbackBackpack = "B_AssaultPack_mcamo";
-private _fallbackHeadgear = "H_HelmetB";
-private _fallbackPrimary = "arifle_MX_F";
-private _fallbackSecondary = "hgun_P07_F";
-private _fallbackMagazines = ["30Rnd_65x39_caseless_mag"];
-private _fallbackGrenade = "HandGrenade";
+        // Apply uniform, vest, bag, headgear, and loadout
+        _enemy forceAddUniform selectRandom _uniformPool;
+        _enemy addVest selectRandom _vestPool;
+        _enemy addBackpack selectRandom _bagPool;
+        _enemy addHeadgear selectRandom _headgearPool;
 
-// Apply uniform
-private _uniform = selectRandom _uniformPool;
-if (!isNil "_uniform" && {isClass (configFile >> "CfgWeapons" >> _uniform)}) then {
-    _enemy forceAddUniform _uniform;
-} else {
-    diag_log format ["WARNING: Invalid uniform %1, using fallback %2", _uniform, _fallbackUniform];
-    _enemy forceAddUniform _fallbackUniform;
-};
-
-// Apply vest
-private _vest = selectRandom _vestPool;
-if (!isNil "_vest" && {isClass (configFile >> "CfgWeapons" >> _vest)}) then {
-    _enemy addVest _vest;
-} else {
-    diag_log format ["WARNING: Invalid vest %1, using fallback %2", _vest, _fallbackVest];
-    _enemy addVest _fallbackVest;
-};
-
-// Apply backpack
-private _backpack = selectRandom _bagPool;
-if (!isNil "_backpack" && {isClass (configFile >> "CfgVehicles" >> _backpack)}) then {
-    _enemy addBackpack _backpack;
-} else {
-    diag_log format ["WARNING: Invalid backpack %1, using fallback %2", _backpack, _fallbackBackpack];
-    _enemy addBackpack _fallbackBackpack;
-};
-
-// Apply headgear
-private _headgear = selectRandom _headgearPool;
-if (!isNil "_headgear" && {isClass (configFile >> "CfgWeapons" >> _headgear)}) then {
-    _enemy addHeadgear _headgear;
-} else {
-    diag_log format ["WARNING: Invalid headgear %1, using fallback %2", _headgear, _fallbackHeadgear];
-    _enemy addHeadgear _fallbackHeadgear;
-};
-
-// Select primary weapon and magazines
-private _equipment = selectRandom _equipmentPool;
-if (!isNil "_equipment" && {typeName _equipment == "ARRAY"} && {count _equipment > 1}) then {
-    private _weapon = _equipment select 0;
-    private _magazines = _equipment select 1;
-
-    if (!isNil "_weapon" && {isClass (configFile >> "CfgWeapons" >> _weapon)}) then {
-        _enemy addWeapon _weapon;
-    } else {
-        diag_log format ["WARNING: Invalid weapon %1, using fallback %2", _weapon, _fallbackPrimary];
-        _enemy addWeapon _fallbackPrimary;
-        _magazines = _fallbackMagazines;  // Assign fallback magazines
-    };
-
-    {
-        if (!isNil "_x" && {isClass (configFile >> "CfgMagazines" >> _x)}) then {
-            _enemy addMagazine _x;
-        } else {
-            diag_log format ["WARNING: Invalid magazine %1, using fallback %2", _x, _fallbackMagazines select 0];
-            _enemy addMagazine (_fallbackMagazines select 0);
+        private _equipment = selectRandom _equipmentPool;
+        if (!isNil "_equipment") then {
+            _enemy addWeapon (_equipment select 0);
+            {_enemy addMagazine _x} forEach (_equipment select 1);
         };
-    } forEach _magazines;
-};
 
-
-// Randomize secondary weapon loadout
-private _secondary = selectRandom _secondaryWeaponsPool;
-if (!isNil "_secondary" && {typeName _secondary == "ARRAY"} && {count _secondary > 1}) then {
-    private _weapon = _secondary select 0;
-    private _magazines = _secondary select 1;
-
-    if (!isNil "_weapon" && {isClass (configFile >> "CfgWeapons" >> _weapon)}) then {
-        _enemy addWeapon _weapon;
-    } else {
-        diag_log format ["WARNING: Invalid secondary weapon %1, using fallback %2", _weapon, _fallbackSecondary];
-        _enemy addWeapon _fallbackSecondary;
-        _magazines = _fallbackMagazines; // Use fallback ammo
-    };
-
-    {
-        if (!isNil "_x" && {isClass (configFile >> "CfgMagazines" >> _x)}) then {
-            _enemy addMagazine _x;
-        } else {
-            diag_log format ["WARNING: Invalid secondary magazine %1, using fallback %2", _x, _fallbackMagazines select 0];
-            _enemy addMagazine (_fallbackMagazines select 0);
+        // Randomize secondary weapon loadout
+        private _secondary = selectRandom _secondaryWeaponsPool;
+        if (!isNil "_secondary") then {
+            _enemy addWeapon (_secondary select 0);
+            {_enemy addMagazine _x} forEach (_secondary select 1);
         };
-    } forEach _magazines;
-};
 
-
-// Assign grenades
-private _grenadeCount = floor (random 3) + 1; // Randomize grenade count (1-3)
-for "_i" from 1 to _grenadeCount do {
-    private _grenade = selectRandom _grenadePool;
-    if (isClass (configFile >> "CfgMagazines" >> _grenade)) then {
-        _enemy addMagazine _grenade;
-    } else {
-        diag_log format ["WARNING: Invalid grenade %1, using fallback %2", _grenade, _fallbackGrenade];
-        _enemy addMagazine _fallbackGrenade;
-    };
-};
-
+        // Assign grenades
+        private _grenadeCount = floor (random 3) + 1; // Randomize grenade count (1-3)
+        for "_i" from 1 to _grenadeCount do {
+            private _grenade = selectRandom _grenadePool;
+            _enemy addMagazine _grenade;
+        };
 
         _enemy addItem selectRandom _medkits;
 
