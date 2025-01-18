@@ -63,7 +63,7 @@ class RscTitles {
                 type = 0;
                 style = 128;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.03;
+                y = safeZoneY + (safeZoneH / 3) + 0.04;
                 w = 0.15;
                 h = 0.015;
                 colorBackground[] = {0, 0, 0, 0.5};
@@ -78,7 +78,7 @@ class RscTitles {
                 type = 0;
                 style = 128;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) - 0.02;
+                y = safeZoneY + (safeZoneH / 3) + 0.04;
                 w = 0.15;
                 h = 0.015;
                 colorBackground[] = {0, 0.6, 0, 1};
@@ -93,7 +93,7 @@ class RscTitles {
                 type = 0;
                 style = 2;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) - 0.015;
+                y = safeZoneY + (safeZoneH / 3) + 0.04;
                 w = 0.15;
                 h = 0.015;
                 colorText[] = {1, 1, 1, 1};
@@ -129,7 +129,7 @@ class RscTitles {
                 font = "PuristaMedium";
                 sizeEx = 0.03;
                 colorText[] = {1, 1, 1, 1};
-                y = safeZoneY + (safeZoneH / 3) + 0.08;
+                y = safeZoneY + (safeZoneH / 3) + 0.09;
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Soft Kills: 0";
             };
@@ -138,7 +138,7 @@ class RscTitles {
                 idc = 2002;
                 type = 0;
                 style = 0;
-                y = safeZoneY + (safeZoneH / 3) + 0.10;
+                y = safeZoneY + (safeZoneH / 3) + 0.12;
                 x = safeZoneX + 0.04;
                 w = 0.2;
                 h = 0.03;
@@ -153,7 +153,7 @@ class RscTitles {
                 idc = 2003;
                 type = 0;
                 style = 0;
-                y = safeZoneY + (safeZoneH / 3) + 0.12;
+                y = safeZoneY + (safeZoneH / 3) + 0.15;
                 x = safeZoneX + 0.04;
                 w = 0.2;
                 h = 0.03;
@@ -169,7 +169,7 @@ class RscTitles {
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.14;
+                y = safeZoneY + (safeZoneH / 3) + 0.18;
                 w = 0.2;
                 h = 0.03;
                 font = "PuristaMedium";
@@ -184,7 +184,7 @@ class RscTitles {
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.16;
+                y = safeZoneY + (safeZoneH / 3) + 0.21;
                 w = 0.2;
                 h = 0.03;
                 font = "PuristaMedium";

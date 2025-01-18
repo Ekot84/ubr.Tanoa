@@ -46,7 +46,7 @@ while {true} do {
     // **Update Health Bar**
     private _health = 1 - damage player;
     private _width = 0.075 * safezoneW * _health; // Scale foreground width dynamically
-    _healthBarFg ctrlSetPosition [0.03 * safezoneW + safezoneX, 0.8 * safezoneH + safezoneY, _width, 0.01 * safezoneH];
+    //_healthBarFg ctrlSetPosition [0.03 * safezoneW + safezoneX, 0.8 * safezoneH + safezoneY, _width, 0.01 * safezoneH];
     _healthBarFg ctrlCommit 0;
     _healthText ctrlSetText format ["%1%%", round(_health * 100)];
 
