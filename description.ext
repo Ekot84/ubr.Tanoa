@@ -194,6 +194,21 @@ class RscTitles {
                 text = "Total Kills: 0";
             };
             
+            class AmmoCounterID {
+                idc = 2006;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.24;
+                w = 0.2;
+                h = 0.03;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {1, 1, 0, 1};  // Yellow for total kills
+                colorBackground[] = {0, 0, 0, 0};
+                text = "Ammo Used: 0";
+            };
+            
             class TopPlayer1 {
                 idc = 2010;
                 type = 0;

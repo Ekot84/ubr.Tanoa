@@ -1,5 +1,5 @@
 // Configuration (Updated for Bug Testing)
-crateDropInterval = [300, 900]; // Airdrop every 5-15 minutes
+crateDropInterval = [3, 9]; // Airdrop every 5-15 minutes
 crateLifetime = 600; // Crate disappears after 10 minutes
 planeType = "B_T_VTOL_01_infantry_F"; // Default plane, change to "C130J_Cargo" if using CUP mod
 
@@ -26,7 +26,12 @@ fnc_AirdropCrate = {
         _dropPos = _caller getPos [_randomDist, _randomDir]; 
 
         _dropPos set [2, 0]; // **Ground level drop position**
-        _validPosition = true;
+
+        // **Ensure the drop position is not over water**
+        private _terrainHeight = getTerrainHeightASL _dropPos;
+        if (_terrainHeight > 0) then {
+            _validPosition = true; // Valid position, not over water
+        };
     };
 
     systemChat format ["[DEBUG] Drop position found at %1", _dropPos];

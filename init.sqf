@@ -19,12 +19,19 @@
 // Loot Manager
 //[] execVM "SCCLoot\lootInit.sqf";
 
+if (isServer) then {
+    execVM "server_ammo_tracker.sqf"; // Runs on server
+};
+
+if (hasInterface) then {
+    execVM "ammo_tracker.sqf"; // Runs on client
+};
 
 diag_log "Initializing EntityKilled Debugging...";
 
 // Ekos temp grejer
 
-/*[] execVM "dumpUniformsToFile.sqf";
+[] execVM "dumpUniformsToFile.sqf";
 [] execVM "debugHint.sqf";
 player setAnimSpeedCoef 2.5;
 player enableStamina false;
@@ -52,7 +59,7 @@ godModeAction = player addAction ["Toggle God Mode", {
         godModeActive = true;
         hint "God Mode Enabled";
     };
-}];*/
+}];
 
 // END EKOS TEMP
 

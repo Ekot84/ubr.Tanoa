@@ -8,6 +8,9 @@ diag_log "Player initialized.";
 cutRsc ["RscDisplayHUD", "PLAIN"];
 sleep 0.5; // Ensure UI loads before retrieving controls
 
+// **Initialize Ammo Used Counter**
+private _ammoKey = format ["ammoUsed_%1", getPlayerUID player]; // Unique per-player key
+
 // **Get the display and retry if necessary**
 private _display = uiNamespace getVariable ["RscDisplayHUD", displayNull];
 private _attempts = 0;
@@ -32,6 +35,7 @@ private _uiElements = [
     ["_airCounter", 2003],
     ["_deathCounter", 2004],
     ["_totalScoreCtrl", 2005],
+    ["_ammoCounter", 2006],
     ["_top1", 2010],
     ["_top2", 2011],
     ["_top3", 2012]
@@ -119,6 +123,16 @@ if (count _uiMap == 0) exitWith {
         (_uiMapLocal get "_top3") ctrlSetText _top3;
 
         //diag_log format ["Updated Leaderboard: %1 | %2 | %3", _top1, _top2, _top3];
+        
+        // **Update Ammo Used Counter**
+        private _ammoKey = format ["ammoUsed_%1", getPlayerUID player]; // Ensure the unique variable
+        private _ammoUsed = player getVariable [_ammoKey, 0]; // Ensure it returns 0 if undefined
+        if (!isNull (_uiMapLocal get "_ammoCounter")) then {
+            (_uiMapLocal get "_ammoCounter") ctrlSetText format ["Ammo Used: %1", _ammoUsed];
+        } else {
+            diag_log "HUD: ERROR - Ammo Used UI element not found!";
+        };
+        
         sleep 1;
     };
 };
