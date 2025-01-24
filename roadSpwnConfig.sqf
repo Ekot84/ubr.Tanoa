@@ -1,17 +1,4 @@
-// Configuration Parameters
-_spawnChance = 0.3;                         // Probability (0-1) of spawning enemies
-_enemyCountRange = [1, 5];                  // Array [minEnemies, maxEnemies] to spawn per location
-_minDistance = 100;                          // Minimum spawn distance from player (meters)
-_maxDistance = 1500;                          // Maximum spawn distance from player (meters)
-_maxTotalEnemies = 50;                       // Maximum total number of enemies allowed at the same time
-_spawnCheckInterval = 120;                   // Interval in seconds to recheck and spawn enemies if under the limit
-_cleanupDistance = 800;                      // Distance from player at which enemies are removed
-_skillRange = [0.1, 0.5];                   // Skill Range
-private _cooldownTime = 800;                // Cooldown time in seconds
-_useAutoLoadout = false;                   // While true Generate loadouts from all mods true CFGS
-
-// Equipment Pools
-// Equipment Pools (Primary Weapons)
+// Equipment Pools (To be populated by user)
 _equipmentPool = [
     ["", []], // Empty slot for unarmed units
 
@@ -33,8 +20,6 @@ _equipmentPool = [
     ["CUP_sgun_M1014", ["CUP_8Rnd_B_Beneli_74Slug", "CUP_8Rnd_B_Beneli_74Pellets"]],  // M1014 (CUP Mod)
     ["CUP_sgun_SPAS12", ["CUP_8Rnd_B_Saiga12_74Pellets", "CUP_8Rnd_B_Saiga12_74Slug"]] // SPAS-12 (CUP Mod)
 ];
-
-// Secondary Weapons (Pistols & SMGs)
 _secondaryWeaponsPool = [
     ["", []], // Empty slot for unarmed units
 
@@ -63,63 +48,6 @@ _secondaryWeaponsPool = [
     ["CUP_FlareWhite_GP25_M", ["CUP_glaunch_6G30"]], // PB Suppressed Makarov
     ["CUP_hgun_Duty", ["CUP_16Rnd_9x19_cz75"]] // CZ-75 Duty
 ];
-
-
-
-_grenadePool = [
-    "HandGrenade",              // M67 Fragmentation Grenade
-    "MiniGrenade",              // RGO Fragmentation Grenade
-    "SmokeShell",               // Smoke Grenade (White)
-    "SmokeShellRed",            // Smoke Grenade (Red)
-    "SmokeShellGreen",          // Smoke Grenade (Green)
-    "SmokeShellYellow",         // Smoke Grenade (Yellow)
-    "SmokeShellPurple",         // Smoke Grenade (Purple)
-    "SmokeShellBlue",           // Smoke Grenade (Blue)
-    "SmokeShellOrange",         // Smoke Grenade (Orange)
-    "Chemlight_green",          // Chemlight (Green)
-    "Chemlight_red",            // Chemlight (Red)
-    "Chemlight_blue",           // Chemlight (Blue)
-    "Chemlight_yellow",         // Chemlight (Yellow)
-    "B_IR_Grenade",             // IR Grenade
-    "O_IR_Grenade",             // IR Grenade (OPFOR)
-    "I_IR_Grenade",             // IR Grenade (INDFOR)
-    "UGL_FlareWhite_F",         // 40mm Flare (White)
-    "UGL_FlareRed_F",           // 40mm Flare (Red)
-    "UGL_FlareGreen_F",         // 40mm Flare (Green)
-    "UGL_FlareYellow_F",        // 40mm Flare (Yellow)
-    "UGL_FlareCIR_F",           // 40mm Flare (IR)
-    "1Rnd_Smoke_Grenade_shell", // 40mm Smoke Grenade (White)
-    "1Rnd_SmokeRed_Grenade_shell",    // 40mm Smoke Grenade (Red)
-    "1Rnd_SmokeGreen_Grenade_shell",  // 40mm Smoke Grenade (Green)
-    "1Rnd_SmokeYellow_Grenade_shell", // 40mm Smoke Grenade (Yellow)
-    "1Rnd_SmokePurple_Grenade_shell", // 40mm Smoke Grenade (Purple)
-    "1Rnd_SmokeBlue_Grenade_shell",   // 40mm Smoke Grenade (Blue)
-    "1Rnd_SmokeOrange_Grenade_shell", // 40mm Smoke Grenade (Orange)
-    "1Rnd_HE_Grenade_shell",    // 40mm HE Grenade
-    "3Rnd_HE_Grenade_shell",    // 3x 40mm HE Grenades
-    "3Rnd_Smoke_Grenade_shell", // 3x 40mm Smoke Grenades (White)
-    "3Rnd_SmokeRed_Grenade_shell",    // 3x 40mm Smoke Grenades (Red)
-    "3Rnd_SmokeGreen_Grenade_shell",  // 3x 40mm Smoke Grenades (Green)
-    "3Rnd_SmokeYellow_Grenade_shell", // 3x 40mm Smoke Grenades (Yellow)
-    "3Rnd_SmokePurple_Grenade_shell", // 3x 40mm Smoke Grenades (Purple)
-    "3Rnd_SmokeBlue_Grenade_shell",   // 3x 40mm Smoke Grenades (Blue)
-    "3Rnd_SmokeOrange_Grenade_shell", // 3x 40mm Smoke Grenades (Orange)
-    ""                          // No nade
-];
-
-_uniformPool = [
-    "U_C_Mechanic_01_F",  
-    "U_C_Man_casual_6_sick_F",                // Black Jacket
-    "U_BG_Guerilla3_2",                // Red Jacket
-    "U_BG_Guerilla3_1",                // Yellow Jacket
-    "U_BG_Guerilla1_1",                // Purple Jacket
-    "U_C_Poor_1",                // Orange Jacket
-    "U_C_Uniform_Farmer_01_F",
-    "U_I_L_Uniform_01_tshirt_skull_F",
-    "U_IG_Guerilla3_2",
-    "U_IG_Guerilla3_1"
-];
-
 _vestPool = [
     "V_Press_F",                  // Press Vest
     "V_Rangemaster_belt",         // Rangemaster Belt
@@ -152,71 +80,19 @@ _vestPool = [
     "V_Safety_blue_F",            // Safety Vest (Blue)
     ""                            // No Vest   
 ];
-
-_bagPool = [
-    /*"B_AssaultPack_blk",           // Assault Pack (Black)
-    "B_AssaultPack_cbr",           // Assault Pack (Coyote)
-    "B_AssaultPack_dgtl",          // Assault Pack (Digital)
-    "B_AssaultPack_eaf_F",         // Assault Pack (Geometric)
-    "B_AssaultPack_khk",           // Assault Pack (Khaki)
-    "B_AssaultPack_mcamo",         // Assault Pack (MTP)
-    "B_AssaultPack_ocamo",         // Assault Pack (Hex)
-    "B_AssaultPack_rgr",           // Assault Pack (Green)
-    "B_AssaultPack_sgg",           // Assault Pack (Sage)
-    "B_AssaultPack_tna_F",         // Assault Pack (Tropic)
-    "B_Bergen_mcamo_F",            // Bergen Backpack (MTP)
-    "B_Bergen_dgtl_F",             // Bergen Backpack (Digital)
-    "B_Bergen_hex_F",              // Bergen Backpack (Hex)
-    "B_Bergen_tna_F",              // Bergen Backpack (Tropic)
-    "B_Carryall_cbr",              // Carryall Backpack (Coyote)
-    "B_Carryall_eaf_F",            // Carryall Backpack (Geometric)
-    "B_Carryall_ghex_F",           // Carryall Backpack (Green Hex)
-    "B_Carryall_khk",              // Carryall Backpack (Khaki)
-    "B_Carryall_mcamo",            // Carryall Backpack (MTP)
-    "B_Carryall_ocamo",            // Carryall Backpack (Hex)
-    "B_Carryall_oli",              // Carryall Backpack (Olive)
-    "B_Carryall_tna_F",            // Carryall Backpack (Tropic)
-    "B_FieldPack_blk",             // Field Pack (Black)
-    "B_FieldPack_cbr",             // Field Pack (Coyote)
-    "B_FieldPack_ocamo",           // Field Pack (Hex)
-    "B_FieldPack_oli",             // Field Pack (Olive)
-    "B_FieldPack_green_F",         // Field Pack (Green)
-    "B_FieldPack_taiga_F",         // Field Pack (Taiga)
-    "B_Kitbag_cbr",                // Kitbag (Coyote)
-    "B_Kitbag_mcamo",              // Kitbag (MTP)
-    "B_Kitbag_rgr",                // Kitbag (Green)
-    "B_Kitbag_sgg",                // Kitbag (Sage)
-    "B_Kitbag_tan",                // Kitbag (Tan)
-    "B_LegStrapBag_black_F",       // Leg Strap Bag (Black)
-    "B_LegStrapBag_coyote_F",      // Leg Strap Bag (Coyote)
-    "B_LegStrapBag_olive_F",       // Leg Strap Bag (Olive)
-    "B_Messenger_Black_F",         // Messenger Bag (Black)
-    "B_Messenger_Coyote_F",        // Messenger Bag (Coyote)
-    "B_Messenger_Gray_F",          // Messenger Bag (Gray)
-    "B_Messenger_Olive_F",         // Messenger Bag (Olive)
-    "B_RadioBag_01_black_F",       // Radio Pack (Black)
-    "B_RadioBag_01_digi_F",        // Radio Pack (Digital)
-    "B_RadioBag_01_eaf_F",         // Radio Pack (Geometric)
-    "B_RadioBag_01_ghex_F",        // Radio Pack (Green Hex)
-    "B_RadioBag_01_mtp_F",         // Radio Pack (MTP)
-    "B_TacticalPack_blk",          // Tactical Backpack (Black)
-    "B_TacticalPack_mcamo",        // Tactical Backpack (MTP)
-    "B_TacticalPack_ocamo",        // Tactical Backpack (Hex)
-    "B_TacticalPack_oli",          // Tactical Backpack (Olive)
-    "B_TacticalPack_rgr",          // Tactical Backpack (Green)
-    "B_RadioBag_01_tropic_F",      // Radio Pack (Tropic)
-    "B_ViperHarness_blk_F",        // Viper Harness (Black)
-    "B_ViperHarness_ghex_F",       // Viper Harness (Green Hex)
-    "B_ViperHarness_hex_F",        // Viper Harness (Hex)
-    "B_ViperHarness_khk_F",        // Viper Harness (Khaki)
-    "B_ViperHarness_oli_F",        // Viper Harness (Olive)
-    "B_ViperLightHarness_blk_F",   // Viper Light Harness (Black)
-    "B_ViperLightHarness_ghex_F",  // Viper Light Harness (Green Hex)
-    "B_ViperLightHarness_hex_F",   // Viper Light Harness (Hex)
-    "B_ViperLightHarness_khk_F",   // Viper Light Harness (Khaki)
-    "B_ViperLightHarness_oli_F",   // Viper Light Harness (Olive)*/
-    ""                             // No Backpack    
+_uniformPool = [
+    "U_C_Mechanic_01_F",  
+    "U_C_Man_casual_6_sick_F",                // Black Jacket
+    "U_BG_Guerilla3_2",                // Red Jacket
+    "U_BG_Guerilla3_1",                // Yellow Jacket
+    "U_BG_Guerilla1_1",                // Purple Jacket
+    "U_C_Poor_1",                // Orange Jacket
+    "U_C_Uniform_Farmer_01_F",
+    "U_I_L_Uniform_01_tshirt_skull_F",
+    "U_IG_Guerilla3_2",
+    "U_IG_Guerilla3_1"
 ];
+_bagPool = [""];
 _headgearPool = [
    /* "H_HelmetSpecB",               // Enhanced Combat Helmet
     "H_HelmetB_light",             // Light Combat Helmet
@@ -396,5 +272,44 @@ _headgearPool = [
     "H_BandMask_reaper",           // Bandana Mask (Reaper)
     ""    
 ];
-
-_medkits = ["FirstAidKit", "Medikit"];
+_grenadePool = [
+    "HandGrenade",              // M67 Fragmentation Grenade
+    "MiniGrenade",              // RGO Fragmentation Grenade
+    "SmokeShell",               // Smoke Grenade (White)
+    "SmokeShellRed",            // Smoke Grenade (Red)
+    "SmokeShellGreen",          // Smoke Grenade (Green)
+    "SmokeShellYellow",         // Smoke Grenade (Yellow)
+    "SmokeShellPurple",         // Smoke Grenade (Purple)
+    "SmokeShellBlue",           // Smoke Grenade (Blue)
+    "SmokeShellOrange",         // Smoke Grenade (Orange)
+    "Chemlight_green",          // Chemlight (Green)
+    "Chemlight_red",            // Chemlight (Red)
+    "Chemlight_blue",           // Chemlight (Blue)
+    "Chemlight_yellow",         // Chemlight (Yellow)
+    "B_IR_Grenade",             // IR Grenade
+    "O_IR_Grenade",             // IR Grenade (OPFOR)
+    "I_IR_Grenade",             // IR Grenade (INDFOR)
+    "UGL_FlareWhite_F",         // 40mm Flare (White)
+    "UGL_FlareRed_F",           // 40mm Flare (Red)
+    "UGL_FlareGreen_F",         // 40mm Flare (Green)
+    "UGL_FlareYellow_F",        // 40mm Flare (Yellow)
+    "UGL_FlareCIR_F",           // 40mm Flare (IR)
+    "1Rnd_Smoke_Grenade_shell", // 40mm Smoke Grenade (White)
+    "1Rnd_SmokeRed_Grenade_shell",    // 40mm Smoke Grenade (Red)
+    "1Rnd_SmokeGreen_Grenade_shell",  // 40mm Smoke Grenade (Green)
+    "1Rnd_SmokeYellow_Grenade_shell", // 40mm Smoke Grenade (Yellow)
+    "1Rnd_SmokePurple_Grenade_shell", // 40mm Smoke Grenade (Purple)
+    "1Rnd_SmokeBlue_Grenade_shell",   // 40mm Smoke Grenade (Blue)
+    "1Rnd_SmokeOrange_Grenade_shell", // 40mm Smoke Grenade (Orange)
+    "1Rnd_HE_Grenade_shell",    // 40mm HE Grenade
+    "3Rnd_HE_Grenade_shell",    // 3x 40mm HE Grenades
+    "3Rnd_Smoke_Grenade_shell", // 3x 40mm Smoke Grenades (White)
+    "3Rnd_SmokeRed_Grenade_shell",    // 3x 40mm Smoke Grenades (Red)
+    "3Rnd_SmokeGreen_Grenade_shell",  // 3x 40mm Smoke Grenades (Green)
+    "3Rnd_SmokeYellow_Grenade_shell", // 3x 40mm Smoke Grenades (Yellow)
+    "3Rnd_SmokePurple_Grenade_shell", // 3x 40mm Smoke Grenades (Purple)
+    "3Rnd_SmokeBlue_Grenade_shell",   // 3x 40mm Smoke Grenades (Blue)
+    "3Rnd_SmokeOrange_Grenade_shell", // 3x 40mm Smoke Grenades (Orange)
+    ""                          // No nade
+];
+private _medkits = ["FirstAidKit", "Medikit"];

@@ -1,6 +1,6 @@
 [] execVM "spawnServerObjects.sqf";
 [] execVM "addEH.sqf";
-[] execVM "enemy_spotted_ets.sqf";
+[] execVM "roadPatrolSpawner.sqf";
 
 
 if (isServer) then {

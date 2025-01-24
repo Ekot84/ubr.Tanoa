@@ -1,7 +1,7 @@
 private _unit = if (typeName _this == "OBJECT") then { _this } else { if (count _this > 0) then { _this select 0 } else { objNull }; };
 
 // Configurable cooldown settings
-private _cooldown = 150;  // How often to regenerate ammo (in seconds)
+private _cooldown = 120;  // How often to regenerate ammo (in seconds)
 
 // Validate unit
 if (isNull _unit) exitWith { 

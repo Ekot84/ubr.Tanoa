@@ -1,5 +1,5 @@
 // Configuration (Updated for Bug Testing)
-crateDropInterval = [3, 9]; // Airdrop every 5-15 minutes
+crateDropInterval = [300, 900]; // Airdrop every 5-15 minutes
 crateLifetime = 600; // Crate disappears after 10 minutes
 planeType = "B_T_VTOL_01_infantry_F"; // Default plane, change to "C130J_Cargo" if using CUP mod
 

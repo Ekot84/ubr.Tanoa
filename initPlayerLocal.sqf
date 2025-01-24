@@ -17,3 +17,5 @@ if (hasInterface) then {
         sleep 0.01; // Check frequently for key press
     };
 };
+
+player setVariable ["savedLoadout", getUnitLoadout player, true];

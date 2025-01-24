@@ -4,6 +4,10 @@ class Header {
     maxPlayers = 3;
 };
 
+author			= "Eko, ChatGPT & En liten bit av Hunthind)";
+onLoadName		= "B.A.J.S";
+onLoadMission	= "Frustration!!! \nA group of B.A.J.S soldiers is tasked with sabotaging a defense.";
+loadScreen = "Bajs.jpg";
 requiredAddons[] = {"CBA_Main"};
 enableStamina = false;
 respawn = 3;
@@ -14,6 +18,17 @@ class CfgFunctions {
 class Extended_PreInit_EventHandlers {
     class tinter_furniture_pre_init {
         init = "call compile preprocessFileLineNumbers 'furniture\XEH_preInit.sqf'";
+    };
+};
+
+class CfgRemoteExec {
+    class Functions {
+        class addMarkerEventHandler { // Function to call for adding the event handler
+            allowedTargets = 2; // Allowed on both server and clients
+        };
+        class drawMarker { // Function to call to draw the marker
+            allowedTargets = 2; // Allowed on both server and clients
+        };
     };
 };
 

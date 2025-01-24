@@ -79,6 +79,7 @@ private _spawnEnemies = {
         // Create enemy unit
         private _enemy = createGroup east createUnit [
             "O_G_Soldier_F",  // Example unit class
+            //"U_C_Mechanic_01_F", // Changed to try to block automatic weapons at spawn
             _spawnPos,
             [],
             0.5,
@@ -429,10 +430,10 @@ private _spawnLoop = {
         };
 
         // Recheck for roads
-        private _roads = _getRoads call _getRoads;
+        /*private _roads = _getRoads call _getRoads;
         if (count _roads > 0) then {
             {[_x, "road"] call _spawnEnemies;} forEach _roads;
-        };
+        };*/
 
         diag_log "[AI Spawner] Rechecking for spawns.";
         sleep _spawnCheckInterval;

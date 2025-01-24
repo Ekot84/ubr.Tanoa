@@ -3,9 +3,9 @@
 [] execVM "arcadeHealth.sqf"; // Optional: Arcade health system
 [] execVM "healthbartest.sqf";
 //[] execVM "kill_death_counter.sqf";
-//[] execVM "killTicker.sqf";
+[] execVM "spawn_boats.sqf";
 [] execVM "staminaRegen.sqf";
-
+//[] execVM "simpleTracking.sqf";
 // Sep. EnemySpawnscript
 [] spawn {
     execVM "enemyspawning\enemySpawnScript.sqf";

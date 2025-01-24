@@ -16,3 +16,12 @@
         // Log kill event
         diag_log format ["[AI Spawner] Enemy killed: %1 %2 by %3 %4", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
     }];
+    
+    player addEventHandler ["Respawn", {
+    params ["_unit", "_corpse"];
+    
+    private _loadout = _corpse getVariable ["savedLoadout", []];
+    if (count _loadout > 0) then {
+        _unit setUnitLoadout _loadout;
+    };
+}];
