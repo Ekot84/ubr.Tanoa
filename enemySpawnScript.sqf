@@ -684,6 +684,17 @@ private _spawnEnemies = {
             deleteGroup _group;
             diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
         };
+
+        if (isPlayer _killer) then {
+            private _distance = _killer distance _unit;
+            private _currentMax = _killer getVariable ["MaxKillDistance", 0];
+
+            if (_distance > _currentMax) then {
+                _killer setVariable ["MaxKillDistance", _distance, true];
+            };
+
+            diag_log format ["HUD: %1 killed %2 at %3m", name _killer, name _unit, _distance];
+        };   
     }];
 
 _activeEnemies pushBack _enemy;

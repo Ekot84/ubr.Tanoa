@@ -104,7 +104,9 @@ if (count _uiMap == 0) exitWith {
             private _scoreData = getPlayerScores _x;
             if (count _scoreData >= 6) then {
                 private _totalScore = _scoreData select 5;
-                _scoresList pushBack [_x, _totalScore];
+                private _maxDistance = round (_x getVariable ["MaxKillDistance", 0]);
+                _scoresList pushBack [_x, _totalScore, _maxDistance];
+                //_scoresList pushBack [_x, _totalScore];
             };
         } forEach _players;
 
@@ -114,9 +116,18 @@ if (count _uiMap == 0) exitWith {
         private _top2 = "2nd: -";
         private _top3 = "3rd: -";
 
-        if (count _scoresList > 0) then { _top1 = format ["1st: %1 - %2", name (_scoresList select 0 select 0), _scoresList select 0 select 1]; };
-        if (count _scoresList > 1) then { _top2 = format ["2nd: %1 - %2", name (_scoresList select 1 select 0), _scoresList select 1 select 1]; };
-        if (count _scoresList > 2) then { _top3 = format ["3rd: %1 - %2", name (_scoresList select 2 select 0), _scoresList select 2 select 1]; };
+        if (count _scoresList > 0) then { 
+            _top1 = format ["1st: %1 - %2 | %3m", 
+                name (_scoresList select 0 select 0), _scoresList select 0 select 1, _scoresList select 0 select 2]; 
+        };
+        if (count _scoresList > 1) then { 
+            _top2 = format ["1st: %1 - %2 | %3m",  
+                name (_scoresList select 1 select 0), _scoresList select 1 select 1, _scoresList select 1 select 2]; 
+        };
+        if (count _scoresList > 2) then { 
+            _top3 = format ["1st: %1 - %2 | %3m",  
+                name (_scoresList select 2 select 0), _scoresList select 2 select 1, _scoresList select 2 select 2]; 
+        };
 
         (_uiMapLocal get "_top1") ctrlSetText _top1;
         (_uiMapLocal get "_top2") ctrlSetText _top2;

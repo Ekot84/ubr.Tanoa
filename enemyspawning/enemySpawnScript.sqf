@@ -92,7 +92,7 @@ private _spawnEnemies = {
 
         diag_log format ["[AI Spawner] Spawned enemy %1 at position %2", _enemyName, _spawnPos];
 
-/*if (isServer) then {
+if (isServer) then {
     _enemy addMPEventHandler ["MPKilled", {
         params ["_unit", "_killer", "_instigator", "_useEffects"];
 
@@ -108,7 +108,18 @@ private _spawnEnemies = {
         // Log kill event
         diag_log format ["[AI Spawner] Enemy killed: %1 (%2) by %3 (%4)", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
 
-if (!isNull _killer && {isPlayer _killer}) then {
+        if (isPlayer _killer) then {
+            private _distance = _killer distance _unit;
+            private _currentMax = _killer getVariable ["MaxKillDistance", 0];
+
+            if (_distance > _currentMax) then {
+                _killer setVariable ["MaxKillDistance", _distance, true];
+            };
+
+            diag_log format ["HUD: %1 killed %2 at %3m", name _killer, name _unit, _distance];
+        };
+
+/*if (!isNull _killer && {isPlayer _killer}) then {
     private _scoreUpdate = [0, 0, 0, 0, 0];  // Default: No change
 
     switch (true) do {
@@ -128,9 +139,9 @@ if (!isNull _killer && {isPlayer _killer}) then {
         private _updatedScores = getPlayerScores _killer;
         diag_log format ["[DEBUG] Verified Scores for %1: %2", name _killer, _updatedScores];
     };
-};
+};*/
 
-if (!isNull _unit && {isPlayer _unit}) then {
+/*if (!isNull _unit && {isPlayer _unit}) then {
     [_unit, [0, 0, 0, 0, 1]] remoteExec ["addPlayerScores", 2];  // +1 Death only
     diag_log format ["[AI Spawner] %1 registered a death (+1)", _deadUnitName];
 
@@ -141,7 +152,7 @@ if (!isNull _unit && {isPlayer _unit}) then {
         private _updatedScores = getPlayerScores _unit;
         diag_log format ["[DEBUG] Verified Death Score for %1: %2", name _unit, _updatedScores];
     };
-};
+};*/
 
 
         // **Handle Teamkills (Executed on Server)**
@@ -158,7 +169,7 @@ if (!isNull _unit && {isPlayer _unit}) then {
         };
     }];
 };
-*/
+
 
 
 _activeEnemies pushBack _enemy;
