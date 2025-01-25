@@ -12,7 +12,7 @@
 // CONFIGURATION (Ensure Variables Exist)
 missionNamespace setVariable ["RoadPatrolMinSpawnTime", 240];  // Min cooldown (Debug)
 missionNamespace setVariable ["RoadPatrolMaxSpawnTime", 900];  // Max cooldown (Debug)
-missionNamespace setVariable ["RoadPatrolMaxActive", 5];      // Max patrols at once
+missionNamespace setVariable ["RoadPatrolMaxActive", 4];      // Max patrols at once
 
 missionNamespace setVariable ["RoadPatrolMinPatrolSize", 2];  // Min patrol size
 missionNamespace setVariable ["RoadPatrolMaxPatrolSize", 10]; // Max patrol size
@@ -110,6 +110,84 @@ SpawnPatrol = {
         _unit setSkill (random [0.3, 0.5, 0.7]);
         [_unit] call EquipUnitRandomly; // ✅ Equip unit with random gear
     };
+};
+
+if (isServer) then {
+    _unit addMPEventHandler ["MPKilled", {
+        params ["_unit", "_killer", "_instigator", "_useEffects"];
+
+        if (isNull _unit) exitWith { diag_log "[AI Spawner] Kill event handler triggered with null unit."; };
+        if (isNull _instigator) then { diag_log "[AI Spawner] Instigator is null, likely an environmental death."; };
+
+        // Get sides and names
+        private _sideDeadUnit = side group _unit;
+        private _sideKiller = if (isNull _instigator) then {"Unknown"} else {side group _instigator};
+        private _deadUnitName = name _unit; 
+        private _killerName = if (isNull _instigator) then {"Environment"} else {name _instigator};
+
+        // Log kill event
+        diag_log format ["[Patrol Spawner] Enemy killed: %1 (%2) by %3 (%4)", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+
+        if (isPlayer _killer) then {
+            private _distance = _killer distance _unit;
+            private _currentMax = _killer getVariable ["MaxKillDistance", 0];
+
+            if (_distance > _currentMax) then {
+                _killer setVariable ["MaxKillDistance", _distance, true];
+            };
+
+            diag_log format ["HUD: %1 killed %2 at %3m", name _killer, name _unit, _distance];
+        };
+        
+/*if (!isNull _killer && {isPlayer _killer}) then {
+    private _scoreUpdate = [0, 0, 0, 0, 0];  // Default: No change
+
+    switch (true) do {
+        case (_unit isKindOf "Man"): { _scoreUpdate set [0, 1]; };  // Infantry Kill
+        case (_unit isKindOf "Car" || _unit isKindOf "Motorcycle"): { _scoreUpdate set [1, 1]; };  // Soft Kill
+        case (_unit isKindOf "Tank" || _unit isKindOf "APC"): { _scoreUpdate set [2, 1]; };  // Armor Kill
+        case (_unit isKindOf "Air"): { _scoreUpdate set [3, 1]; };  // Air Kill
+    };
+
+    [_killer, _scoreUpdate] remoteExec ["addPlayerScores", 2];  // Apply correct kill score
+    diag_log format ["[AI Spawner] %1 received score update %2 for killing %3", _killerName, _scoreUpdate, _deadUnitName];
+
+    // Verify score update after 1 second
+    [_killer] spawn {
+        params ["_killer"];
+        sleep 1;
+        private _updatedScores = getPlayerScores _killer;
+        diag_log format ["[DEBUG] Verified Scores for %1: %2", name _killer, _updatedScores];
+    };
+};*/
+
+/*if (!isNull _unit && {isPlayer _unit}) then {
+    [_unit, [0, 0, 0, 0, 1]] remoteExec ["addPlayerScores", 2];  // +1 Death only
+    diag_log format ["[AI Spawner] %1 registered a death (+1)", _deadUnitName];
+
+    // Verify score update after 1 second
+    [_unit] spawn {
+        params ["_unit"];
+        sleep 1;
+        private _updatedScores = getPlayerScores _unit;
+        diag_log format ["[DEBUG] Verified Death Score for %1: %2", name _unit, _updatedScores];
+    };
+};*/
+
+
+        // **Handle Teamkills (Executed on Server)**
+        if (!isNull _instigator && {side group _instigator isEqualTo side group _unit} && { !(_unit isEqualTo _instigator) }) then {
+            [_instigator, [-1, 0, 1, 0, 0]] remoteExec ["addPlayerScores", 2];  // -1 Kill, +1 Teamkill
+            diag_log format ["[AI Spawner] %1 committed a TEAMKILL on %2 (-1 point, +1 teamkill)", name _instigator, _deadUnitName];
+        };
+
+        // **Delete group if empty**
+        private _group = group _unit;
+        if (!isNull _group && {count units _group == 0}) then {
+            deleteGroup _group;
+            diag_log format ["[AI Spawner] Group %1 deleted as it was empty.", _group];
+        };
+    }];
 };
 
 // MAIN SPAWN LOOP

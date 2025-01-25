@@ -36,9 +36,14 @@ private _uiElements = [
     ["_deathCounter", 2004],
     ["_totalScoreCtrl", 2005],
     ["_ammoCounter", 2006],
+    ["_hitCounter", 2007],
+    ["_ammoHitRatio", 2008], 
     ["_top1", 2010],
     ["_top2", 2011],
-    ["_top3", 2012]
+    ["_top3", 2012], 
+    ["_top1_2", 2013],
+    ["_top2_2", 2014], 
+    ["_top3_2", 2015] 
 ];
 
 private _uiMap = createHashMap;
@@ -105,35 +110,67 @@ if (count _uiMap == 0) exitWith {
             if (count _scoreData >= 6) then {
                 private _totalScore = _scoreData select 5;
                 private _maxDistance = round (_x getVariable ["MaxKillDistance", 0]);
-                _scoresList pushBack [_x, _totalScore, _maxDistance];
-                //_scoresList pushBack [_x, _totalScore];
+
+                // **Retrieve Ammo Used & Hits for each player**
+                private _ammoKey = format ["ammoUsed_%1", getPlayerUID _x]; 
+                private _hitsKey = format ["totalHits_%1", getPlayerUID _x]; 
+
+                private _ammoUsed = _x getVariable [_ammoKey, 0]; // Default to 0
+                private _totalHits = _x getVariable [_hitsKey, 0]; // Default to 0
+
+                // **Calculate Hit Ratio Safely (Avoid Division by Zero)**
+                private _hitRatio = if (_ammoUsed > 0) then {
+                    (_totalHits / _ammoUsed) * 100
+                } else {
+                    0
+                };
+
+                // **Store all relevant data**
+                _scoresList pushBack [_x, _totalScore, _maxDistance, _ammoUsed, _totalHits, round _hitRatio];
             };
         } forEach _players;
 
         _scoresList sort false;
 
+        // **Initialize Top 3 Leaderboard Entries**
         private _top1 = "1st: -";
         private _top2 = "2nd: -";
         private _top3 = "3rd: -";
 
+        private _top1_2 = "Ammo: -, Hits: -, Acc: -";
+        private _top2_2 = "Ammo: -, Hits: -, Acc: -";
+        private _top3_2 = "Ammo: -, Hits: -, Acc: -";
+
         if (count _scoresList > 0) then { 
             _top1 = format ["1st: %1 - %2 | %3m", 
                 name (_scoresList select 0 select 0), _scoresList select 0 select 1, _scoresList select 0 select 2]; 
+            _top1_2 = format ["Amo: %1 | Hit: %2 | Acc: %3%%",
+                _scoresList select 0 select 3, _scoresList select 0 select 4, _scoresList select 0 select 5];
         };
         if (count _scoresList > 1) then { 
-            _top2 = format ["1st: %1 - %2 | %3m",  
+            _top2 = format ["2nd: %1 - %2 | %3m",  
                 name (_scoresList select 1 select 0), _scoresList select 1 select 1, _scoresList select 1 select 2]; 
+            _top2_2 = format ["Amo: %1 | Hit: %2 | Acc: %3%%",
+                _scoresList select 1 select 3, _scoresList select 1 select 4, _scoresList select 1 select 5];
         };
         if (count _scoresList > 2) then { 
-            _top3 = format ["1st: %1 - %2 | %3m",  
+            _top3 = format ["3rd: %1 - %2 | %3m",  
                 name (_scoresList select 2 select 0), _scoresList select 2 select 1, _scoresList select 2 select 2]; 
+            _top3_2 = format ["Amo: %1 | Hit: %2 | Acc: %3%%",
+                _scoresList select 2 select 3, _scoresList select 2 select 4, _scoresList select 2 select 5];
         };
 
         (_uiMapLocal get "_top1") ctrlSetText _top1;
         (_uiMapLocal get "_top2") ctrlSetText _top2;
         (_uiMapLocal get "_top3") ctrlSetText _top3;
 
+        (_uiMapLocal get "_top1_2") ctrlSetText _top1_2;
+        (_uiMapLocal get "_top2_2") ctrlSetText _top2_2;
+        (_uiMapLocal get "_top3_2") ctrlSetText _top3_2;
+
         //diag_log format ["Updated Leaderboard: %1 | %2 | %3", _top1, _top2, _top3];
+        //diag_log format ["Updated Leaderboard Stats: %1 | %2 | %3", _top1_2, _top2_2, _top3_2];
+
         
         // **Update Ammo Used Counter**
         private _ammoKey = format ["ammoUsed_%1", getPlayerUID player]; // Ensure the unique variable
@@ -142,6 +179,40 @@ if (count _uiMap == 0) exitWith {
             (_uiMapLocal get "_ammoCounter") ctrlSetText format ["Ammo Used: %1", _ammoUsed];
         } else {
             diag_log "HUD: ERROR - Ammo Used UI element not found!";
+        };
+        
+        // **Update Total Hits Counter**
+        private _hitsKey = format ["totalHits_%1", getPlayerUID player]; // Unique per-player key
+        private _totalHits = player getVariable [_hitsKey, 0]; // Ensure it returns 0 if undefined
+        if (!isNil "_totalHits" && { _totalHits isEqualType 0 }) then {
+            if (!isNull (_uiMapLocal get "_hitCounter")) then {
+                (_uiMapLocal get "_hitCounter") ctrlSetText format ["Total Hits: %1", _totalHits];
+            } else {
+                diag_log "HUD: ERROR - Hit Counter UI element not found!";
+            };
+        } else {
+            diag_log format ["HUD: ERROR - Invalid totalHits value for %1 (Value: %2)", name player, _totalHits];
+        };
+        
+        // **Retrieve Ammo Used & Total Hits**
+        private _ammoKey = format ["ammoUsed_%1", getPlayerUID player]; 
+        private _hitsKey = format ["totalHits_%1", getPlayerUID player]; 
+
+        private _ammoUsed = player getVariable [_ammoKey, 0]; // Default to 0
+        private _totalHits = player getVariable [_hitsKey, 0]; // Default to 0
+
+        // **Calculate Hit Ratio Safely (Avoid Division by Zero)**
+        private _hitRatio = if (_ammoUsed > 0) then {
+            (_totalHits / _ammoUsed) * 100
+        } else {
+            0
+        };
+
+        // **Update Hit Ratio Counter in UI**
+        if (!isNull (_uiMapLocal get "_ammoHitRatio")) then {
+            (_uiMapLocal get "_ammoHitRatio") ctrlSetText format ["Hit Accuracy: %1%%", round _hitRatio];
+        } else {
+            diag_log "HUD: ERROR - Hit Ratio UI element not found!";
         };
         
         sleep 1;

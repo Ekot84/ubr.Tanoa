@@ -1,9 +1,9 @@
 // Configuration Parameters
-_spawnChance = 0.3;                         // Probability (0-1) of spawning enemies
-_enemyCountRange = [1, 5];                  // Array [minEnemies, maxEnemies] to spawn per location
+_spawnChance = 0.2;                         // Probability (0-1) of spawning enemies
+_enemyCountRange = [1, 3];                  // Array [minEnemies, maxEnemies] to spawn per location
 _minDistance = 100;                          // Minimum spawn distance from player (meters)
 _maxDistance = 1500;                          // Maximum spawn distance from player (meters)
-_maxTotalEnemies = 50;                       // Maximum total number of enemies allowed at the same time
+_maxTotalEnemies = 15;                       // Maximum total number of enemies allowed at the same time
 _spawnCheckInterval = 120;                   // Interval in seconds to recheck and spawn enemies if under the limit
 _cleanupDistance = 800;                      // Distance from player at which enemies are removed
 _skillRange = [0.1, 0.5];                   // Skill Range

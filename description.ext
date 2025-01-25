@@ -133,58 +133,65 @@ class RscTitles {
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Infantry Kills: 0";
             };
-
+            
+            //Hidden, no vehicles in mission
             class SoftVehicleCounter {
                 idc = 2001;
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                w = 0.2;
-                h = 0.03;
+                //w = 0.2;
+                //h = 0.03;
+                w = 0.0;
+                h = 0.00;
                 font = "PuristaMedium";
-                sizeEx = 0.03;
+                //sizeEx = 0.03;
+                sizeEx = 0.00;
                 colorText[] = {1, 1, 1, 1};
                 y = safeZoneY + (safeZoneH / 3) + 0.09;
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Soft Kills: 0";
             };
-
+            
+            //Hidden, no vehicles in mission
             class ArmorCounter {
                 idc = 2002;
                 type = 0;
                 style = 0;
                 y = safeZoneY + (safeZoneH / 3) + 0.12;
                 x = safeZoneX + 0.04;
-                w = 0.2;
-                h = 0.03;
+                w = 0.0;
+                h = 0.00;
                 font = "PuristaMedium";
-                sizeEx = 0.03;
+                sizeEx = 0.00;
                 colorText[] = {1, 1, 1, 1};                
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Armor Kills: 0";
             };
 
+            //Hidden, no vehicles in mission
             class AirCounter {
                 idc = 2003;
                 type = 0;
                 style = 0;
                 y = safeZoneY + (safeZoneH / 3) + 0.15;
                 x = safeZoneX + 0.04;
-                w = 0.2;
-                h = 0.03;
+                w = 0.0;
+                h = 0.00;
                 font = "PuristaMedium";
-                sizeEx = 0.03;
+                sizeEx = 0.00;
                 colorText[] = {1, 1, 1, 1};                
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Air Kills: 0";
             };
-
+            
+            //Below Total Kills #3 element
             class DeathCounter {
                 idc = 2004;
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.18;
+                y = safeZoneY + (safeZoneH / 3) + 0.09;
                 w = 0.2;
                 h = 0.03;
                 font = "PuristaMedium";
@@ -193,13 +200,14 @@ class RscTitles {
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Deaths: 0";
             };
-
+            
+            //Below Deaths #4 Element
             class TotalScoreCounter {
                 idc = 2005;
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.21;
+                y = safeZoneY + (safeZoneH / 3) + 0.12;
                 w = 0.2;
                 h = 0.03;
                 font = "PuristaMedium";
@@ -209,21 +217,54 @@ class RscTitles {
                 text = "Total Kills: 0";
             };
             
+            //Below Total Score #5 Element
             class AmmoCounterID {
                 idc = 2006;
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.24;
+                y = safeZoneY + (safeZoneH / 3) + 0.15;
                 w = 0.2;
                 h = 0.03;
                 font = "PuristaMedium";
                 sizeEx = 0.03;
-                colorText[] = {1, 1, 0, 1};  // Yellow for total kills
+                colorText[] = {1, 1, 1, 1};  // Yellow for total kills
+                colorBackground[] = {0, 0, 0, 0};
+                text = "Ammo Used: 0";
+            };
+
+            //Below AmmoCounter #6 Element
+            class HitsCounterID {
+                idc = 2007;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.18;
+                w = 0.2;
+                h = 0.03;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {1, 1, 1, 1};  // Yellow for total kills
                 colorBackground[] = {0, 0, 0, 0};
                 text = "Ammo Used: 0";
             };
             
+            //Below Total Score #5 Element
+            class AmmoHitRatioID {
+                idc = 2008;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.21;
+                w = 0.2;
+                h = 0.03;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {1, 1, 1, 1};  // Yellow for total kills
+                colorBackground[] = {0, 0, 0, 0};
+                text = "Ammo Used: 0";
+            };
+                        
             class TopPlayer1 {
                 idc = 2010;
                 type = 0;
@@ -244,7 +285,7 @@ class RscTitles {
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.34;
+                y = safeZoneY + (safeZoneH / 3) + 0.36;
                 w = 0.3;
                 h = 0.02;
                 font = "PuristaMedium";
@@ -259,7 +300,52 @@ class RscTitles {
                 type = 0;
                 style = 0;
                 x = safeZoneX + 0.04;
-                y = safeZoneY + (safeZoneH / 3) + 0.38;
+                y = safeZoneY + (safeZoneH / 3) + 0.42;
+                w = 0.3;
+                h = 0.02;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {0.8, 0.5, 0.2, 1}; // Bronze for third place
+                colorBackground[] = {0, 0, 0, 0};
+                text = "3rd: -";
+            };
+            
+            class TopPlayer1_2 {
+                idc = 2013;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.33;
+                w = 0.3;
+                h = 0.02;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {1, 0.84, 0, 1}; // Gold for first place
+                colorBackground[] = {0, 0, 0, 0};
+                text = "1st: -";
+            };
+
+            class TopPlayer2_2 {
+                idc = 2014;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.39;
+                w = 0.3;
+                h = 0.02;
+                font = "PuristaMedium";
+                sizeEx = 0.03;
+                colorText[] = {0.75, 0.75, 0.75, 1}; // Silver for second place
+                colorBackground[] = {0, 0, 0, 0};
+                text = "2nd: -";
+            };
+
+            class TopPlayer3_2 {
+                idc = 2015;
+                type = 0;
+                style = 0;
+                x = safeZoneX + 0.04;
+                y = safeZoneY + (safeZoneH / 3) + 0.45;
                 w = 0.3;
                 h = 0.02;
                 font = "PuristaMedium";

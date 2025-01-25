@@ -106,7 +106,7 @@ if (isServer) then {
         private _killerName = if (isNull _instigator) then {"Environment"} else {name _instigator};
 
         // Log kill event
-        diag_log format ["[AI Spawner] Enemy killed: %1 (%2) by %3 (%4)", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
+        diag_log format ["[AI Spawnerz] Enemy killed: %1 (%2) by %3 (%4)", _sideDeadUnit, _deadUnitName, _sideKiller, _killerName];
 
         if (isPlayer _killer) then {
             private _distance = _killer distance _unit;
@@ -118,7 +118,7 @@ if (isServer) then {
 
             diag_log format ["HUD: %1 killed %2 at %3m", name _killer, name _unit, _distance];
         };
-
+        
 /*if (!isNull _killer && {isPlayer _killer}) then {
     private _scoreUpdate = [0, 0, 0, 0, 0];  // Default: No change
 
